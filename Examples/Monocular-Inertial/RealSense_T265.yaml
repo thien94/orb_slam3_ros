@@ -8,16 +8,16 @@ File.version: "1.0"
 Camera.type: "KannalaBrandt8"
 
 # Left Camera calibration and distortion parameters (OpenCV)
-Camera1.fx: 284.9501953125
-Camera1.fy: 285.115295410156
-Camera1.cx: 420.500213623047
-Camera1.cy: 400.738098144531
+Camera1.fx: 283.794586181641
+Camera1.fy: 284.952392578125
+Camera1.cx: 424.865386962891
+Camera1.cy: 396.590911865234
 
 # Kannala-Brandt distortion parameters
-Camera1.k1: -0.00530046410858631
-Camera1.k2: 0.0423333682119846
-Camera1.k3: -0.03949885815382
-Camera1.k4: 0.00682387687265873
+Camera1.k1: -0.0027128029614687
+Camera1.k2: 0.0366887785494328
+Camera1.k3: -0.0354852788150311
+Camera1.k4: 0.00590010220184922
 
 # Camera resolution
 Camera.width: 848
@@ -34,9 +34,9 @@ IMU.T_b_c1: !!opencv-matrix
    rows: 4
    cols: 4
    dt: f
-   data: [-0.999959, -0.00265193, 0.00870996, 0.0107000041753054, 
-          0.00262197, -0.999991, -0.0034493, -1.45519152283669e-11,
-         0.00871902, -0.00342632, 0.999956, -1.45519152283669e-11,
+   data: [-0.99994, -0.00299325, 0.0105676, 0.0107000041753054, 
+         0.0029806, -0.999995, -0.00121326, -1.45519152283669e-11,
+         0.0105711, -0.00118169, 0.999943, -1.45519152283669e-11,
           0.0, 0.0, 0.0, 1.0]
 
 # Do not insert KFs when recently lost
