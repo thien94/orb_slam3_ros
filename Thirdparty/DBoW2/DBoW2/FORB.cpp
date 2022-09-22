@@ -188,6 +188,23 @@ void FORB::toMat8U(const std::vector<TDescriptor> &descriptors,
 
 // --------------------------------------------------------------------------
 
+void FORB::toArray8U(const TDescriptor &descriptors, unsigned char * array)
+{
+  const unsigned char *d = descriptors.ptr<unsigned char>();
+  std::copy(d, d+FORB::L, array);
+}
+
+// --------------------------------------------------------------------------
+
+void FORB::fromArray8U(TDescriptor &descriptors, unsigned char * array)
+{
+  unsigned char *d = descriptors.ptr<unsigned char>();
+  std::copy(array, array+FORB::L, d);
+}
+
+
+// --------------------------------------------------------------------------
+
 } // namespace DBoW2
 
 
