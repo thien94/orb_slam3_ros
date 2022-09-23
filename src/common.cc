@@ -20,7 +20,7 @@ tf::Matrix3x3 tf_orb_to_ros(1, 0, 0,
 
 void setup_ros_publishers(ros::NodeHandle &node_handler, image_transport::ImageTransport &image_transport)
 {
-    pose_pub = node_handler.advertise<geometry_msgs::PoseStamped> ("orb_slam3/camera/pose", 1);
+    pose_pub = node_handler.advertise<geometry_msgs::PoseStamped> ("orb_slam3/camera_pose", 1);
 
     map_points_pub = node_handler.advertise<sensor_msgs::PointCloud2>("orb_slam3/map_points", 1);
 

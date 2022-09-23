@@ -35,7 +35,6 @@ If a newer version is required (>= 3.0), follow [installation instruction](https
 ```
 cd ~/catkin_ws/src
 git clone https://github.com/thien94/orb_slam_3_ros.git
-
 ```
 - Build:
 ```
@@ -64,7 +63,7 @@ rosbag play MH_01_easy.bag
 - `/camera/right/image_raw`
 - `/imu`
 ### Published topics
-- `/orb_slam3/camera/pose`
+- `/orb_slam3/camera_pose`
 - `/orb_slam3/tracking_image`
 - `/orb_slam3/map_points`
 ### Params
