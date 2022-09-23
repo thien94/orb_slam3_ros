@@ -1,6 +1,7 @@
 # ORB-SLAM3-ROS
 
 **Ongoing development**
+
 A ROS implementation of [ORB-SLAM3](https://github.com/UZ-SLAMLab/ORB_SLAM3) V1.0, which focuses on the ROS part similar to the [orb_slam_2_ros](https://github.com/appliedAI-Initiative/orb_slam_2_ros) package.
 
 This package uses ```catkin build```. Tested on Ubuntu 20.04.
@@ -9,7 +10,7 @@ This package uses ```catkin build```. Tested on Ubuntu 20.04.
 ```
 sudo apt install libeigen3-dev
 ```
-### Pangolin (might be removed in the future)
+### Pangolin
 ```
 cd ~
 git clone https://github.com/stevenlovegrove/Pangolin.git
@@ -24,16 +25,18 @@ Check the OpenCV version on your computer (required at leat 3.0 as stated in the
 ```
 python3 -c "import cv2; print(cv2.__version__)" 
 ```
-On a freshly installed Ubuntu 20.04.4 LTS with desktop image, OpenCV 4.2.0 is included so we can skip to the next step. If a newer version is required (>= 3.0), follow [installation instruction](https://docs.opencv.org/4.x/d0/d3d/tutorial_general_install.html).
+On a freshly installed Ubuntu 20.04.4 LTS with desktop image, OpenCV 4.2.0 is included so we can skip to the next step. If a newer version is required (>= 3.0), follow [installation instruction](https://docs.opencv.org/4.x/d0/d3d/tutorial_general_install.html) and change the corresponding OpenCV version in `CMakeLists.txt`
 
 
 ## 2. Installation
+- Clone the repo:
 ```
-# Clone the repo:
 cd ~/catkin_ws/src
 git clone https://github.com/thien94/orb_slam_3_ros.git
 
-# Build
+```
+- Build:
+```
 cd ../
 catkin build
 ```
