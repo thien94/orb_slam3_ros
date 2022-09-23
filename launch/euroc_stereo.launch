@@ -1,14 +1,22 @@
 <launch>
     <param name="use_sim_time" value="false" />
 
-    <!-- input arguments for ORB-SLAM3 -->
-    <arg name="voc_file"    value="$(find orb_slam_3_ros)/orb_slam_3/Vocabulary/ORBvoc.txt.bin" />
-    <arg name="param_file"  value="$(find orb_slam_3_ros)/config/Stereo/EuRoC.yaml" />
-    <arg name="do_rectify"  value="false" />
-
-    <node name="orb_slam_3" pkg="orb_slam_3_ros" type="ros_stereo" args="$(arg voc_file) $(arg param_file) $(arg do_rectify)" output="screen">
+    <!-- Main node -->
+    <node name="orb_slam_3" pkg="orb_slam_3_ros" type="ros_stereo" output="screen">
+    
         <!-- change the topics according to the dataset -->
         <remap from="/camera/left/image_raw"    to="/cam0/image_raw"/>
         <remap from="/camera/right/image_raw"   to="/cam1/image_raw"/>
+
+        <!-- Parameters for original ORB-SLAM3 -->
+        <param name="voc_file"      type="string" value="$(find orb_slam_3_ros)/orb_slam_3/Vocabulary/ORBvoc.txt.bin"/>
+        <param name="settings_file" type="string" value="$(find orb_slam_3_ros)/config/Stereo/EuRoC.yaml"/>
+
+        <!-- Parameters for ROS -->
+        <param name="map_frame_id"  type="string"   value="world" />
+        <param name="pose_frame_id" type="string"   value="camera" />
     </node>
+    
+    <!-- Visualization -->
+    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find orb_slam_3_ros)/config/orb_slam_3_ros.rviz" output="screen" />
 </launch>

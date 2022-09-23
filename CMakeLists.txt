@@ -43,6 +43,7 @@ MESSAGE(${OpenCV_VERSION})
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
   cv_bridge
+  image_transport
   geometry_msgs
   message_filters
   nav_msgs
@@ -66,6 +67,7 @@ catkin_package (
 ## Your package locations should be listed before other locations
 include_directories(
   ${PROJECT_SOURCE_DIR}
+  ${PROJECT_SOURCE_DIR}/include
   ${PROJECT_SOURCE_DIR}/orb_slam_3
   ${PROJECT_SOURCE_DIR}/orb_slam_3/include
   ${PROJECT_SOURCE_DIR}/orb_slam_3/include/CameraModels
@@ -153,18 +155,52 @@ target_link_libraries(${PROJECT_NAME}
   -lcrypto
 )
 
-## ROS nodes
-add_executable(ros_mono ${PROJECT_SOURCE_DIR}/src/ros_mono.cc)
-target_link_libraries(ros_mono ${PROJECT_NAME} ${catkin_LIBRARIES})
+## ROS node
+add_executable(ros_mono
+  src/ros_mono.cc
+  src/common.cc
+)
+target_link_libraries(ros_mono
+  ${PROJECT_NAME}
+  ${catkin_LIBRARIES}
+)
 
-add_executable(ros_mono_inertial ${PROJECT_SOURCE_DIR}/src/ros_mono_inertial.cc)
-target_link_libraries(ros_mono_inertial ${PROJECT_NAME} ${catkin_LIBRARIES})
+## ROS node
+add_executable(ros_mono_inertial 
+  src/ros_mono_inertial.cc
+  src/common.cc
+)
+target_link_libraries(ros_mono_inertial 
+  ${PROJECT_NAME}
+  ${catkin_LIBRARIES}
+)
 
-add_executable(ros_stereo ${PROJECT_SOURCE_DIR}/src/ros_stereo.cc)
-target_link_libraries(ros_stereo ${PROJECT_NAME} ${catkin_LIBRARIES})
+## ROS node
+add_executable(ros_stereo 
+  src/ros_stereo.cc
+  src/common.cc
+)
+target_link_libraries(ros_stereo
+  ${PROJECT_NAME}
+  ${catkin_LIBRARIES}
+)
 
-add_executable(ros_stereo_inertial ${PROJECT_SOURCE_DIR}/src/ros_stereo_inertial.cc)
-target_link_libraries(ros_stereo_inertial ${PROJECT_NAME} ${catkin_LIBRARIES})
+## ROS node
+add_executable(ros_stereo_inertial
+  src/ros_stereo_inertial.cc
+  src/common.cc
+)
+target_link_libraries(ros_stereo_inertial 
+  ${PROJECT_NAME}
+  ${catkin_LIBRARIES}
+)
 
-add_executable(ros_rgbd ${PROJECT_SOURCE_DIR}/src/ros_rgbd.cc)
-target_link_libraries(ros_rgbd ${PROJECT_NAME} ${catkin_LIBRARIES})
+## ROS node
+add_executable(ros_rgbd
+  src/ros_rgbd.cc
+  src/common.cc
+)
+target_link_libraries(ros_rgbd
+  ${PROJECT_NAME}
+  ${catkin_LIBRARIES}
+)

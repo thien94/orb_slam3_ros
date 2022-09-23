@@ -1,36 +1,10 @@
 /**
-* This file is part of ORB-SLAM3
+* 
+* Adapted from ORB-SLAM3: Examples/ROS/src/ros_rgbd.cc
 *
-* Copyright (C) 2017-2021 Carlos Campos, Richard Elvira, Juan J. Gómez Rodríguez, José M.M. Montiel and Juan D. Tardós, University of Zaragoza.
-* Copyright (C) 2014-2016 Raúl Mur-Artal, José M.M. Montiel and Juan D. Tardós, University of Zaragoza.
-*
-* ORB-SLAM3 is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
-* License as published by the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
-*
-* ORB-SLAM3 is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even
-* the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License along with ORB-SLAM3.
-* If not, see <http://www.gnu.org/licenses/>.
 */
 
-
-#include<iostream>
-#include<algorithm>
-#include<fstream>
-#include<chrono>
-
-#include<ros/ros.h>
-#include <cv_bridge/cv_bridge.h>
-#include <message_filters/subscriber.h>
-#include <message_filters/time_synchronizer.h>
-#include <message_filters/sync_policies/approximate_time.h>
-
-#include<opencv2/core/core.hpp>
-
-#include"System.h"
+#include "common.h"
 
 using namespace std;
 
@@ -47,35 +21,49 @@ public:
 int main(int argc, char **argv)
 {
     ros::init(argc, argv, "RGBD");
-    ros::start();
-
-    if(argc != 3)
+    ros::console::set_logger_level(ROSCONSOLE_DEFAULT_NAME, ros::console::levels::Info);
+    if (argc > 1)
     {
-        cerr << endl << "Usage: rosrun ORB_SLAM3 RGBD path_to_vocabulary path_to_settings" << endl;        
+        ROS_WARN ("Arguments supplied via command line are ignored.");
+    }
+
+    ros::NodeHandle node_handler;
+    std::string node_name = ros::this_node::getName();
+    image_transport::ImageTransport image_transport(node_handler);
+
+    std::string voc_file, settings_file;
+    node_handler.param<std::string>(node_name + "/voc_file", voc_file, "file_not_set");
+    node_handler.param<std::string>(node_name + "/settings_file", settings_file, "file_not_set");
+
+    if (voc_file == "file_not_set" || settings_file == "file_not_set")
+    {
+        ROS_ERROR("Please provide voc_file and settings_file in the launch file");       
         ros::shutdown();
         return 1;
-    }    
+    }
+
+    node_handler.param<std::string>(node_name + "/map_frame_id", map_frame_id, "map");
+    node_handler.param<std::string>(node_name + "/pose_frame_id", pose_frame_id, "pose");
 
     // Create SLAM system. It initializes all system threads and gets ready to process frames.
-    ORB_SLAM3::System SLAM(argv[1],argv[2],ORB_SLAM3::System::RGBD,true);
+    ORB_SLAM3::System SLAM(voc_file, settings_file, ORB_SLAM3::System::RGBD, true);
 
     ImageGrabber igb(&SLAM);
 
-    ros::NodeHandle nh;
-
-    message_filters::Subscriber<sensor_msgs::Image> rgb_sub(nh, "/camera/rgb/image_raw", 100);
-    message_filters::Subscriber<sensor_msgs::Image> depth_sub(nh, "camera/depth_registered/image_raw", 100);
+    message_filters::Subscriber<sensor_msgs::Image> rgb_sub(node_handler, "/camera/rgb/image_raw", 100);
+    message_filters::Subscriber<sensor_msgs::Image> depth_sub(node_handler, "/camera/depth_registered/image_raw", 100);
     typedef message_filters::sync_policies::ApproximateTime<sensor_msgs::Image, sensor_msgs::Image> sync_pol;
-    message_filters::Synchronizer<sync_pol> sync(sync_pol(10), rgb_sub,depth_sub);
+    message_filters::Synchronizer<sync_pol> sync(sync_pol(10), rgb_sub, depth_sub);
     sync.registerCallback(boost::bind(&ImageGrabber::GrabRGBD,&igb,_1,_2));
+
+    setup_ros_publishers(node_handler, image_transport);
+
+    setup_tf_orb_to_ros(ORB_SLAM3::System::RGBD);
 
     ros::spin();
 
     // Stop all threads
     SLAM.Shutdown();
-
-    // Save camera trajectory
-    SLAM.SaveKeyFrameTrajectoryTUM("KeyFrameTrajectory.txt");
 
     ros::shutdown();
 
@@ -106,7 +94,16 @@ void ImageGrabber::GrabRGBD(const sensor_msgs::ImageConstPtr& msgRGB,const senso
         ROS_ERROR("cv_bridge exception: %s", e.what());
         return;
     }
-    mpSLAM->TrackRGBD(cv_ptrRGB->image,cv_ptrD->image,cv_ptrRGB->header.stamp.toSec());
+    
+    // Main algorithm runs here
+    Sophus::SE3f Tcw_SE3f = mpSLAM->TrackRGBD(cv_ptrRGB->image, cv_ptrD->image, cv_ptrRGB->header.stamp.toSec());
+    cv::Mat Tcw = SE3f_to_cvMat(Tcw_SE3f);
+
+    ros::Time current_frame_time = cv_ptrRGB->header.stamp;
+
+    publish_ros_pose_tf(Tcw, current_frame_time, ORB_SLAM3::System::STEREO);
+
+    publish_ros_tracking_mappoints(mpSLAM->GetTrackedMapPoints(), current_frame_time);
+
+    publish_ros_tracking_img(mpSLAM->GetCurrentFrame(), current_frame_time);
 }
-
-
