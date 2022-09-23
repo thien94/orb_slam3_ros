@@ -14,6 +14,7 @@
         <!-- Parameters for ROS -->
         <param name="map_frame_id"  type="string"   value="world" />
         <param name="pose_frame_id" type="string"   value="camera" />
+        <param name="enable_pangolin" type="bool"   value="true" />
     </node>
     
     <!-- Visualization -->

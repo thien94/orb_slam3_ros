@@ -59,11 +59,14 @@ int main(int argc, char **argv)
         return 1;
     }
 
+    bool enable_pangolin;
+    node_handler.param<bool>(node_name + "/enable_pangolin", enable_pangolin, true);
+
     node_handler.param<std::string>(node_name + "/map_frame_id", map_frame_id, "map");
     node_handler.param<std::string>(node_name + "/pose_frame_id", pose_frame_id, "pose");
 
     // Create SLAM system. It initializes all system threads and gets ready to process frames.
-    ORB_SLAM3::System SLAM(voc_file, settings_file, ORB_SLAM3::System::IMU_MONOCULAR, true);
+    ORB_SLAM3::System SLAM(voc_file, settings_file, ORB_SLAM3::System::IMU_MONOCULAR, enable_pangolin);
 
     ImuGrabber imugb;
     ImageGrabber igb(&SLAM, &imugb);
