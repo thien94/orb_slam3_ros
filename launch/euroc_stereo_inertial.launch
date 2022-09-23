@@ -3,12 +3,13 @@
 
     <!-- input arguments for ORB-SLAM3 -->
     <arg name="voc_file"    value="$(find orb_slam_3_ros)/orb_slam_3/Vocabulary/ORBvoc.txt.bin" />
-    <arg name="param_file"  value="$(find orb_slam_3_ros)/config/Stereo/EuRoC.yaml" />
+    <arg name="param_file"  value="$(find orb_slam_3_ros)/config/Stereo-Inertial/EuRoC.yaml" />
     <arg name="do_rectify"  value="false" />
 
-    <node name="orb_slam_3" pkg="orb_slam_3_ros" type="ros_stereo" args="$(arg voc_file) $(arg param_file) $(arg do_rectify)" output="screen">
+    <node name="orb_slam_3" pkg="orb_slam_3_ros" type="ros_stereo_inertial" args="$(arg voc_file) $(arg param_file) $(arg do_rectify)" output="screen">
         <!-- change the topics according to the dataset -->
         <remap from="/camera/left/image_raw"    to="/cam0/image_raw"/>
         <remap from="/camera/right/image_raw"   to="/cam1/image_raw"/>
+        <remap from="/imu"                      to="/imu0"/>
     </node>
 </launch>
