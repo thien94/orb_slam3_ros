@@ -38,8 +38,8 @@ cd ../
 catkin build
 ```
 
-## 3. Run
-### [EuRoC dataset](https://projects.asl.ethz.ch/datasets/doku.php?id=kmavvisualinertialdatasets):
+## 3. Run examples
+### [EuRoC dataset](https://projects.asl.ethz.ch/datasets/doku.php?id=kmavvisualinertialdatasets)
 - Download ```MH_01_easy.bag``` as an example:
 ```
 cd ~/some/path
@@ -65,12 +65,28 @@ roslaunch orb_slam_3_ros tum_vi_stereo_inertial.launch
 # In another terminal:
 rosbag play dataset-corridor1_512_16.bag
 ```
+### [TUM dataset](http://vision.in.tum.de/data/datasets/rgbd-dataset/download)
+- Download ```rgbd_dataset_freiburg1_xyz.bag``` as an example:
+```
+cd ~/some/path
+wget -c https://vision.in.tum.de/rgbd/dataset/freiburg1/rgbd_dataset_freiburg1_xyz.bag
+```
+- Run in RGBD mode:
+```
+# In one terminal:
+roslaunch orb_slam_3_ros tum_rgbd.launch
+# In another terminal:
+rosbag play rgbd_dataset_freiburg1_xyz.bag
+```
+- **Note**: change `TUMX.yaml` to `TUM1.yaml`,`TUM2.yaml` or `TUM3.yaml` for freiburg1, freiburg2 and freiburg3 sequences respectively.
+
 ## 4. Topics
 ### Subscribed topics
 - `/camera/image_raw` for Mono(-Inertial) node
 - `/camera/left/image_raw` for Stereo(-Inertial) node
 - `/camera/right/image_raw` for Stereo(-Inertial) node
 - `/imu` for Mono/Stereo-Inertial node
+- `/camera/rgb/image_raw` and `/camera/depth_registered/image_raw` for RGBD node
 ### Published topics
 - `/orb_slam3/camera_pose`
 - `/orb_slam3/tracking_image`
