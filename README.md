@@ -1,8 +1,6 @@
 # ORB-SLAM3-ROS
 
-**Ongoing development**
-
-A ROS implementation of [ORB-SLAM3](https://github.com/UZ-SLAMLab/ORB_SLAM3) V1.0 that focuses on the ROS part, similar to [orb_slam_2_ros](https://github.com/appliedAI-Initiative/orb_slam_2_ros).
+A ROS implementation of [ORB-SLAM3](https://github.com/UZ-SLAMLab/ORB_SLAM3) V1.0 that focuses on the ROS part.
 
 This package uses ```catkin build```. Tested on Ubuntu 20.04.
 ## 1. Prerequisites
@@ -49,17 +47,30 @@ wget -c http://robotics.ethz.ch/~asl-datasets/ijrr_euroc_mav_dataset/machine_hal
 ```
 - Run in mono-inertial mode:
 ```
+# In one terminal:
 roslaunch orb_slam_3_ros euroc_mono_inertial.launch
-```
-- Playback the bag file in another terminal:
-```
+# In another terminal:
 rosbag play MH_01_easy.bag
+```
+### [TUM-VI dataset](https://vision.in.tum.de/data/datasets/visual-inertial-dataset)
+- Download ```dataset-corridor1_512_16.bag``` as an example:
+```
+cd ~/some/path
+wget -c https://vision.in.tum.de/tumvi/calibrated/512_16/dataset-corridor1_512_16.bag
+```
+- Run in stereo-inertial mode:
+```
+# In one terminal:
+roslaunch orb_slam_3_ros tum_vi_stereo_inertial.launch
+# In another terminal:
+rosbag play dataset-corridor1_512_16.bag
 ```
 ## 4. Topics
 ### Subscribed topics
-- `/camera/left/image_raw`
-- `/camera/right/image_raw`
-- `/imu`
+- `/camera/image_raw` for Mono(-Inertial) node
+- `/camera/left/image_raw` for Stereo(-Inertial) node
+- `/camera/right/image_raw` for Stereo(-Inertial) node
+- `/imu` for Mono/Stereo-Inertial node
 ### Published topics
 - `/orb_slam3/camera_pose`
 - `/orb_slam3/tracking_image`
