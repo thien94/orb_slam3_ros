@@ -39,39 +39,21 @@ catkin build
 ```
 
 ## 3. Run examples
-### [EuRoC dataset](https://projects.asl.ethz.ch/datasets/doku.php?id=kmavvisualinertialdatasets)
-- Download ```MH_01_easy.bag``` as an example:
-```
-cd ~/some/path
-wget -c http://robotics.ethz.ch/~asl-datasets/ijrr_euroc_mav_dataset/machine_hall/MH_01_easy/MH_01_easy.bag
-```
-- Run in mono-inertial mode:
+### Mono-inertial mode with [EuRoC](https://projects.asl.ethz.ch/datasets/doku.php?id=kmavvisualinertialdatasets)'s [`MH_01_easy.bag`]( http://robotics.ethz.ch/~asl-datasets/ijrr_euroc_mav_dataset/machine_hall/MH_01_easy/MH_01_easy.bag):
 ```
 # In one terminal:
 roslaunch orb_slam_3_ros euroc_mono_inertial.launch
 # In another terminal:
 rosbag play MH_01_easy.bag
 ```
-### [TUM-VI dataset](https://vision.in.tum.de/data/datasets/visual-inertial-dataset)
-- Download ```dataset-corridor1_512_16.bag``` as an example:
-```
-cd ~/some/path
-wget -c https://vision.in.tum.de/tumvi/calibrated/512_16/dataset-corridor1_512_16.bag
-```
-- Run in stereo-inertial mode:
+### Stereo-inertial mode with [TUM-VI](https://vision.in.tum.de/data/datasets/visual-inertial-dataset)'s [`dataset-corridor1_512_16.bag`](https://vision.in.tum.de/tumvi/calibrated/512_16/dataset-corridor1_512_16.bag)
 ```
 # In one terminal:
 roslaunch orb_slam_3_ros tum_vi_stereo_inertial.launch
 # In another terminal:
 rosbag play dataset-corridor1_512_16.bag
 ```
-### [TUM dataset](http://vision.in.tum.de/data/datasets/rgbd-dataset/download)
-- Download ```rgbd_dataset_freiburg1_xyz.bag``` as an example:
-```
-cd ~/some/path
-wget -c https://vision.in.tum.de/rgbd/dataset/freiburg1/rgbd_dataset_freiburg1_xyz.bag
-```
-- Run in RGBD mode:
+### RGB-D mode with [TUM](http://vision.in.tum.de/data/datasets/rgbd-dataset/download)'s [`rgbd_dataset_freiburg1_xyz.bag`](https://vision.in.tum.de/rgbd/dataset/freiburg1/rgbd_dataset_freiburg1_xyz.bag)
 ```
 # In one terminal:
 roslaunch orb_slam_3_ros tum_rgbd.launch
@@ -80,6 +62,16 @@ rosbag play rgbd_dataset_freiburg1_xyz.bag
 ```
 - **Note**: change `TUMX.yaml` to `TUM1.yaml`,`TUM2.yaml` or `TUM3.yaml` for freiburg1, freiburg2 and freiburg3 sequences respectively.
 
+### Live stereo-Inertial mode with Realsense T265
+- Modify the original `rs_t265.launch` to enable fisheye images and imu data (change `unite_imu_method` to `linear_interpolation`).
+- Run `rs-enumerate-devices -c` to get the calibration parameters and modify `config/Stereo-Inertial/RealSense_T265.yaml` accordingly.
+- Run:
+```
+# In one terminal:
+roslaunch realsense2_camera rs_t265.launch
+# In another terminal:
+roslaunch orb_slam_3_ros rs_t265_stereo_inertial.launch
+```
 ## 4. Topics
 ### Subscribed topics
 - `/camera/image_raw` for Mono(-Inertial) node
@@ -98,7 +90,7 @@ rosbag play rgbd_dataset_freiburg1_xyz.bag
 
 ## To-do:
 - ~~Publish basic topics (camera pose, tracking image and point cloud)~~
+- Publish more topics (odom, full map pointcloud, keyframe, loop closure etc.)
 - Add other functions as services (map save/load/merge etc.)
-- Publish more topics (keyframe, loop closure etc.)
 - Add RGB-D and AR nodes (testing with?)
 - Replace Pangolin (dynamic reconfigure?)
