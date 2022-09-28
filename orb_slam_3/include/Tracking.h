@@ -94,6 +94,10 @@ public:
         return mpLastKeyFrame;
     }
 
+    Sophus::SE3<float> GetImuTwb();
+    Eigen::Vector3f GetImuVwb();
+    bool isImuPreintegrated();
+
     void CreateMapInAtlas();
     //std::mutex mMutexTracks;
 

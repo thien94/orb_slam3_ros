@@ -178,6 +178,10 @@ public:
     std::vector<cv::KeyPoint> GetTrackedKeyPointsUn();
     cv::Mat GetCurrentFrame();
 
+    Sophus::SE3<float> GetImuTwb();
+    Eigen::Vector3f GetImuVwb();
+    bool isImuPreintegrated();
+
     // For debugging
     double GetTimeFromIMUInit();
     bool isLost();

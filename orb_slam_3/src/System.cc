@@ -1321,6 +1321,21 @@ cv::Mat System::GetCurrentFrame () {
     return mpFrameDrawer->DrawFrame();
 }
 
+Sophus::SE3<float> System::GetImuTwb() 
+{
+    return mpTracker->GetImuTwb();
+}
+
+Eigen::Vector3f System::GetImuVwb()
+{
+    return mpTracker->GetImuVwb();
+}
+
+bool System::isImuPreintegrated()
+{
+    return mpTracker->isImuPreintegrated();
+}
+
 double System::GetTimeFromIMUInit()
 {
     double aux = mpLocalMapper->GetCurrKFTime()-mpLocalMapper->mFirstTs;

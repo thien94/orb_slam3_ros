@@ -62,11 +62,13 @@ int main(int argc, char **argv)
     bool enable_pangolin;
     node_handler.param<bool>(node_name + "/enable_pangolin", enable_pangolin, true);
 
-    node_handler.param<std::string>(node_name + "/map_frame_id", map_frame_id, "map");
-    node_handler.param<std::string>(node_name + "/pose_frame_id", pose_frame_id, "pose");
+    node_handler.param<std::string>(node_name + "/world_frame_id", world_frame_id, "map");
+    node_handler.param<std::string>(node_name + "/cam_frame_id", cam_frame_id, "camera");
+    node_handler.param<std::string>(node_name + "/imu_frame_id", imu_frame_id, "imu");
 
     // Create SLAM system. It initializes all system threads and gets ready to process frames.
-    ORB_SLAM3::System SLAM(voc_file, settings_file, ORB_SLAM3::System::IMU_MONOCULAR, enable_pangolin);
+    sensor_type = ORB_SLAM3::System::IMU_MONOCULAR;
+    ORB_SLAM3::System SLAM(voc_file, settings_file, sensor_type, enable_pangolin);
 
     ImuGrabber imugb;
     ImageGrabber igb(&SLAM, &imugb);
@@ -74,17 +76,14 @@ int main(int argc, char **argv)
     ros::Subscriber sub_imu = node_handler.subscribe("/imu", 1000, &ImuGrabber::GrabImu, &imugb); 
     ros::Subscriber sub_img0 = node_handler.subscribe("/camera/image_raw", 100, &ImageGrabber::GrabImage, &igb);
 
-    setup_ros_publishers(node_handler, image_transport);
+    setup_ros_publishers(node_handler, image_transport, sensor_type);
 
     std::thread sync_thread(&ImageGrabber::SyncWithImu, &igb);
-
-    setup_tf_orb_to_ros(ORB_SLAM3::System::IMU_MONOCULAR);
 
     ros::spin();
 
     // Stop all threads
     SLAM.Shutdown();
-
     ros::shutdown();
 
     return 0;
@@ -131,21 +130,19 @@ void ImageGrabber::SyncWithImu()
         {
             cv::Mat im;
             double tIm = 0;
-            ros::Time current_frame_time;
 
             tIm = img0Buf.front()->header.stamp.toSec();
             if(tIm>mpImuGb->imuBuf.back()->header.stamp.toSec())
                 continue;
             
-            {
             this->mBufMutex.lock();
             im = GetImage(img0Buf.front());
-            current_frame_time = img0Buf.front()->header.stamp;
+            ros::Time msg_time = img0Buf.front()->header.stamp;
             img0Buf.pop();
             this->mBufMutex.unlock();
-            }
 
             vector<ORB_SLAM3::IMU::Point> vImuMeas;
+            Eigen::Vector3f Wbb;
             mpImuGb->mBufMutex.lock();
             if (!mpImuGb->imuBuf.empty())
             {
@@ -154,23 +151,36 @@ void ImageGrabber::SyncWithImu()
                 while(!mpImuGb->imuBuf.empty() && mpImuGb->imuBuf.front()->header.stamp.toSec() <= tIm)
                 {
                     double t = mpImuGb->imuBuf.front()->header.stamp.toSec();
+
                     cv::Point3f acc(mpImuGb->imuBuf.front()->linear_acceleration.x, mpImuGb->imuBuf.front()->linear_acceleration.y, mpImuGb->imuBuf.front()->linear_acceleration.z);
+                    
                     cv::Point3f gyr(mpImuGb->imuBuf.front()->angular_velocity.x, mpImuGb->imuBuf.front()->angular_velocity.y, mpImuGb->imuBuf.front()->angular_velocity.z);
+
                     vImuMeas.push_back(ORB_SLAM3::IMU::Point(acc, gyr, t));
+                    
+                    Wbb << mpImuGb->imuBuf.front()->angular_velocity.x, mpImuGb->imuBuf.front()->angular_velocity.y, mpImuGb->imuBuf.front()->angular_velocity.z;
+
                     mpImuGb->imuBuf.pop();
                 }
             }
             mpImuGb->mBufMutex.unlock();
 
             // Main algorithm runs here
-            Sophus::SE3f Tcw_SE3f = mpSLAM->TrackMonocular(im, tIm, vImuMeas);
-            cv::Mat Tcw = SE3f_to_cvMat(Tcw_SE3f);
+            Sophus::SE3f Tcw = mpSLAM->TrackMonocular(im, tIm, vImuMeas);
+            Sophus::SE3f Twc = Tcw.inverse();
+            Sophus::SE3f Twb = mpSLAM->GetImuTwb();
+            Eigen::Vector3f Vwb = mpSLAM->GetImuVwb();
 
-            publish_ros_pose_tf(Tcw, current_frame_time, ORB_SLAM3::System::IMU_MONOCULAR);
+            // We use the IMU data to get angular velocity, then transform it to world frame
+            Eigen::Vector3f Wwb = mpSLAM->GetImuTwb().rotationMatrix() * Wbb;
+            
+            publish_ros_camera_pose(Twc, msg_time);
+            publish_ros_tf_transform(Twc, world_frame_id, cam_frame_id, msg_time);
+            publish_ros_tf_transform(Twb, world_frame_id, imu_frame_id, msg_time);
+            publish_ros_body_odom(Twb, Vwb, Wwb, msg_time);
 
-            publish_ros_tracking_mappoints(mpSLAM->GetTrackedMapPoints(), current_frame_time);
-
-            publish_ros_tracking_img(mpSLAM->GetCurrentFrame(), current_frame_time);
+            publish_ros_tracking_mappoints(mpSLAM->GetTrackedMapPoints(), msg_time);
+            publish_ros_tracking_img(mpSLAM->GetCurrentFrame(), msg_time);
         }
 
         std::chrono::milliseconds tSleep(1);
@@ -183,5 +193,6 @@ void ImuGrabber::GrabImu(const sensor_msgs::ImuConstPtr &imu_msg)
     mBufMutex.lock();
     imuBuf.push(imu_msg);
     mBufMutex.unlock();
+
     return;
 }

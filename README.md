@@ -27,13 +27,9 @@ On a freshly installed Ubuntu 20.04.4 LTS with desktop image, OpenCV 4.2.0 is al
 
 
 ## 2. Installation
-- Clone the repo:
 ```
 cd ~/catkin_ws/src
 git clone https://github.com/thien94/orb_slam_3_ros.git
-```
-- Build:
-```
 cd ../
 catkin build
 ```
@@ -62,7 +58,7 @@ rosbag play rgbd_dataset_freiburg1_xyz.bag
 ```
 - **Note**: change `TUMX.yaml` to `TUM1.yaml`,`TUM2.yaml` or `TUM3.yaml` for freiburg1, freiburg2 and freiburg3 sequences respectively.
 
-### Live stereo-Inertial mode with Realsense T265
+### Live stereo-inertial mode with Realsense T265
 - Modify the original `rs_t265.launch` to enable fisheye images and imu data (change `unite_imu_method` to `linear_interpolation`).
 - Run `rs-enumerate-devices -c` to get the calibration parameters and modify `config/Stereo-Inertial/RealSense_T265.yaml` accordingly.
 - Run:
@@ -92,5 +88,5 @@ roslaunch orb_slam_3_ros rs_t265_stereo_inertial.launch
 - ~~Publish basic topics (camera pose, tracking image and point cloud)~~
 - Publish more topics (odom, full map pointcloud, keyframe, loop closure etc.)
 - Add other functions as services (map save/load/merge etc.)
-- Add RGB-D and AR nodes (testing with?)
+- Add AR nodes (testing with?)
 - Replace Pangolin (dynamic reconfigure?)

@@ -42,21 +42,20 @@ int main(int argc, char **argv)
         return 1;
     }
 
-    node_handler.param<std::string>(node_name + "/map_frame_id", map_frame_id, "map");
-    node_handler.param<std::string>(node_name + "/pose_frame_id", pose_frame_id, "pose");
+    node_handler.param<std::string>(node_name + "/world_frame_id", world_frame_id, "map");
+    node_handler.param<std::string>(node_name + "/cam_frame_id", cam_frame_id, "camera");
 
     bool enable_pangolin;
     node_handler.param<bool>(node_name + "/enable_pangolin", enable_pangolin, true);
 
     // Create SLAM system. It initializes all system threads and gets ready to process frames.
-    ORB_SLAM3::System SLAM(voc_file, settings_file, ORB_SLAM3::System::MONOCULAR, enable_pangolin);
+    sensor_type = ORB_SLAM3::System::MONOCULAR;
+    ORB_SLAM3::System SLAM(voc_file, settings_file, sensor_type, enable_pangolin);
     ImageGrabber igb(&SLAM);
 
     ros::Subscriber sub_img0 = node_handler.subscribe("/camera/image_raw", 1, &ImageGrabber::GrabImage, &igb);
 
-    setup_ros_publishers(node_handler, image_transport);
-
-    setup_tf_orb_to_ros(ORB_SLAM3::System::MONOCULAR);
+    setup_ros_publishers(node_handler, image_transport, sensor_type);
 
     ros::spin();
 
@@ -82,15 +81,15 @@ void ImageGrabber::GrabImage(const sensor_msgs::ImageConstPtr& msg)
         return;
     }
 
-    // Main algorithm runs here
-    Sophus::SE3f Tcw_SE3f = mpSLAM->TrackMonocular(cv_ptr->image, cv_ptr->header.stamp.toSec());
-    cv::Mat Tcw = SE3f_to_cvMat(Tcw_SE3f);
+    // ORB-SLAM3 runs in TrackMonocular()
+    Sophus::SE3f Tcw = mpSLAM->TrackMonocular(cv_ptr->image, cv_ptr->header.stamp.toSec());
+    Sophus::SE3f Twc = Tcw.inverse();
 
-    ros::Time current_frame_time = msg->header.stamp;
+    ros::Time msg_time = msg->header.stamp;
 
-    publish_ros_pose_tf(Tcw, current_frame_time, ORB_SLAM3::System::MONOCULAR);
-
-    publish_ros_tracking_mappoints(mpSLAM->GetTrackedMapPoints(), current_frame_time);
-
-    publish_ros_tracking_img(mpSLAM->GetCurrentFrame(), current_frame_time);
+    publish_ros_camera_pose(Twc, msg_time);
+    publish_ros_tf_transform(Twc, world_frame_id, cam_frame_id, msg_time);
+    
+    publish_ros_tracking_mappoints(mpSLAM->GetTrackedMapPoints(), msg_time);
+    publish_ros_tracking_img(mpSLAM->GetCurrentFrame(), msg_time);
 }

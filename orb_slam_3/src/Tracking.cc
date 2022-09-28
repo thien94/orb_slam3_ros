@@ -4083,6 +4083,21 @@ float Tracking::GetImageScale()
     return mImageScale;
 }
 
+Sophus::SE3<float> Tracking::GetImuTwb()
+{
+    return mCurrentFrame.GetImuPose();
+}
+
+Eigen::Vector3f Tracking::GetImuVwb()
+{
+    return mCurrentFrame.GetVelocity();
+}
+
+bool Tracking::isImuPreintegrated()
+{
+    return mCurrentFrame.mpImuPreintegrated;
+}
+
 #ifdef REGISTER_LOOP
 void Tracking::RequestStop()
 {

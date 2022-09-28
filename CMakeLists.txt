@@ -45,12 +45,12 @@ find_package(catkin REQUIRED COMPONENTS
   cv_bridge
   image_transport
   geometry_msgs
-  message_filters
+  sensor_msgs
   nav_msgs
+  std_msgs
+  message_filters
   roscpp
   rospy
-  sensor_msgs
-  std_msgs
   tf
   tf2
 )
