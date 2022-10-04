@@ -1545,5 +1545,13 @@ string System::CalculateCheckSum(string filename, int type)
     return checksum;
 }
 
+
+vector<MapPoint*> System::GetAllMapPoints()
+{
+    Map* pActiveMap = mpAtlas->GetCurrentMap();
+    return pActiveMap->GetAllMapPoints();
+    // const vector<MapPoint*> &vpRefMPs = pActiveMap->GetReferenceMapPoints();
+}
+
 } //namespace ORB_SLAM
 

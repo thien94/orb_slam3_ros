@@ -176,6 +176,7 @@ public:
     int GetTrackingState();
     std::vector<MapPoint*> GetTrackedMapPoints();
     std::vector<cv::KeyPoint> GetTrackedKeyPointsUn();
+    std::vector<MapPoint*> GetAllMapPoints();
     cv::Mat GetCurrentFrame();
 
     Sophus::SE3<float> GetImuTwb();

@@ -163,7 +163,7 @@ Visualization Manager:
       Size (Pixels): 3
       Size (m): 0.029999999329447746
       Style: Points
-      Topic: /orb_slam3/map_points
+      Topic: /orb_slam3/tracked_points
       Unreliable: false
       Use Fixed Frame: true
       Use rainbow: true

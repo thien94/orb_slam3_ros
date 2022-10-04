@@ -106,6 +106,7 @@ void ImageGrabber::GrabStereo(const sensor_msgs::ImageConstPtr& msgLeft,const se
     publish_ros_camera_pose(Twc, msg_time);
     publish_ros_tf_transform(Twc, world_frame_id, cam_frame_id, msg_time);
 
-    publish_ros_tracked_mappoints(mpSLAM->GetTrackedMapPoints(), msg_time);
     publish_ros_tracking_img(mpSLAM->GetCurrentFrame(), msg_time);
+    publish_ros_tracked_points(mpSLAM->GetTrackedMapPoints(), msg_time);
+    publish_ros_all_points(mpSLAM->GetAllMapPoints(), msg_time);
 }

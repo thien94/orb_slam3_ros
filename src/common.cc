@@ -9,7 +9,8 @@
 ORB_SLAM3::System::eSensor sensor_type;
 std::string world_frame_id, cam_frame_id, imu_frame_id;
 
-ros::Publisher pose_pub, odom_pub, map_points_pub;
+ros::Publisher pose_pub, odom_pub;
+ros::Publisher tracked_mappoints_pub, all_mappoints_pub;
 image_transport::Publisher tracking_img_pub;
 
 
@@ -17,7 +18,9 @@ void setup_ros_publishers(ros::NodeHandle &node_handler, image_transport::ImageT
 {
     pose_pub = node_handler.advertise<geometry_msgs::PoseStamped>("orb_slam3/camera_pose", 1);
 
-    map_points_pub = node_handler.advertise<sensor_msgs::PointCloud2>("orb_slam3/map_points", 1);
+    tracked_mappoints_pub = node_handler.advertise<sensor_msgs::PointCloud2>("orb_slam3/tracked_points", 1);
+
+    all_mappoints_pub = node_handler.advertise<sensor_msgs::PointCloud2>("orb_slam3/all_points", 1);
 
     tracking_img_pub = image_transport.advertise("orb_slam3/tracking_image", 1);
 
@@ -96,18 +99,24 @@ void publish_ros_tracking_img(cv::Mat image, ros::Time msg_time)
     tracking_img_pub.publish(rendered_image_msg);
 }
 
-void publish_ros_tracked_mappoints(std::vector<ORB_SLAM3::MapPoint*> map_points, ros::Time msg_time)
+void publish_ros_tracked_points(std::vector<ORB_SLAM3::MapPoint*> tracked_points, ros::Time msg_time)
 {
-    sensor_msgs::PointCloud2 cloud = tracked_mappoints_to_pointcloud(map_points, msg_time);
+    sensor_msgs::PointCloud2 cloud = mappoint_to_pointcloud(tracked_points, msg_time);
     
-    map_points_pub.publish(cloud);
+    tracked_mappoints_pub.publish(cloud);
 }
 
+void publish_ros_all_points(std::vector<ORB_SLAM3::MapPoint*> map_points, ros::Time msg_time)
+{
+    sensor_msgs::PointCloud2 cloud = mappoint_to_pointcloud(map_points, msg_time);
+    
+    all_mappoints_pub.publish(cloud);
+}
 
-//
+//////////////////////////////////////////////////
 // Miscellaneous functions
-//
-sensor_msgs::PointCloud2 tracked_mappoints_to_pointcloud(std::vector<ORB_SLAM3::MapPoint*> map_points, ros::Time msg_time)
+//////////////////////////////////////////////////
+sensor_msgs::PointCloud2 mappoint_to_pointcloud(std::vector<ORB_SLAM3::MapPoint*> map_points, ros::Time msg_time)
 {
     const int num_channels = 3; // x y z
 

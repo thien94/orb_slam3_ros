@@ -79,7 +79,8 @@ roslaunch orb_slam_3_ros rs_t265_stereo_inertial.launch
 - `/orb_slam3/camera_pose`, left camera pose in world frame, published at camera rate
 - `/orb_slam3/body_odom`, imu-body odometry in world frame, published at camera rate
 - `/orb_slam3/tracking_image`, image from the left camera with key points and a status text
-- `/orb_slam3/map_points`, all key points contained in the sliding window
+- `/orb_slam3/tracked_points`, all key points contained in the sliding window
+- `/orb_slam3/all_points`, all key points in the map
 - `/tf`, with camera and imu-body poses in world frame
 ### Params
 - `voc_file`: path to vocabulary file required by ORB-SLAM3
@@ -88,7 +89,7 @@ roslaunch orb_slam_3_ros rs_t265_stereo_inertial.launch
 
 ## To-do:
 - ~~Publish basic topics (camera pose, tracking image and point cloud)~~
-- Publish more topics (~~odom~~, full map pointcloud, keyframe, loop closure etc.)
+- Publish more topics (~~odom~~, ~~full map pointcloud~~, keyframe, loop closure etc.)
 - Add other functions as services (map save/load/merge etc.)
 - Add AR nodes (testing with?)
 - Replace Pangolin (dynamic reconfigure?)

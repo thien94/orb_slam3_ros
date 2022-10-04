@@ -180,8 +180,9 @@ void ImageGrabber::SyncWithImu()
             publish_ros_tf_transform(Twb, world_frame_id, imu_frame_id, msg_time);
             publish_ros_body_odom(Twb, Vwb, Wwb, msg_time);
 
-            publish_ros_tracked_mappoints(mpSLAM->GetTrackedMapPoints(), msg_time);
             publish_ros_tracking_img(mpSLAM->GetCurrentFrame(), msg_time);
+            publish_ros_tracked_points(mpSLAM->GetTrackedMapPoints(), msg_time);
+            publish_ros_all_points(mpSLAM->GetAllMapPoints(), msg_time);
         }
 
         std::chrono::milliseconds tSleep(1);
