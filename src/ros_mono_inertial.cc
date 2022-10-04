@@ -74,7 +74,7 @@ int main(int argc, char **argv)
     ImageGrabber igb(&SLAM, &imugb);
 
     ros::Subscriber sub_imu = node_handler.subscribe("/imu", 1000, &ImuGrabber::GrabImu, &imugb); 
-    ros::Subscriber sub_img0 = node_handler.subscribe("/camera/image_raw", 100, &ImageGrabber::GrabImage, &igb);
+    ros::Subscriber sub_img = node_handler.subscribe("/camera/image_raw", 100, &ImageGrabber::GrabImage, &igb);
 
     setup_ros_publishers(node_handler, image_transport, sensor_type);
 
@@ -84,6 +84,7 @@ int main(int argc, char **argv)
 
     // Stop all threads
     SLAM.Shutdown();
+    
     ros::shutdown();
 
     return 0;
@@ -179,7 +180,7 @@ void ImageGrabber::SyncWithImu()
             publish_ros_tf_transform(Twb, world_frame_id, imu_frame_id, msg_time);
             publish_ros_body_odom(Twb, Vwb, Wwb, msg_time);
 
-            publish_ros_tracking_mappoints(mpSLAM->GetTrackedMapPoints(), msg_time);
+            publish_ros_tracked_mappoints(mpSLAM->GetTrackedMapPoints(), msg_time);
             publish_ros_tracking_img(mpSLAM->GetCurrentFrame(), msg_time);
         }
 

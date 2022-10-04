@@ -10,7 +10,8 @@ ORB_SLAM3::System::eSensor sensor_type;
 std::string world_frame_id, cam_frame_id, imu_frame_id;
 
 ros::Publisher pose_pub, odom_pub, map_points_pub;
-image_transport::Publisher rendered_image_pub;
+image_transport::Publisher tracking_img_pub;
+
 
 void setup_ros_publishers(ros::NodeHandle &node_handler, image_transport::ImageTransport &image_transport, ORB_SLAM3::System::eSensor sensor_type)
 {
@@ -18,7 +19,7 @@ void setup_ros_publishers(ros::NodeHandle &node_handler, image_transport::ImageT
 
     map_points_pub = node_handler.advertise<sensor_msgs::PointCloud2>("orb_slam3/map_points", 1);
 
-    rendered_image_pub = image_transport.advertise("orb_slam3/tracking_image", 1);
+    tracking_img_pub = image_transport.advertise("orb_slam3/tracking_image", 1);
 
     if (sensor_type == ORB_SLAM3::System::IMU_MONOCULAR || 
         sensor_type == ORB_SLAM3::System::IMU_STEREO || 
@@ -27,7 +28,6 @@ void setup_ros_publishers(ros::NodeHandle &node_handler, image_transport::ImageT
         odom_pub = node_handler.advertise<nav_msgs::Odometry>("orb_slam3/body_odom", 1);
     }
 }
-
 
 void publish_ros_body_odom(Sophus::SE3f Twb_SE3f, Eigen::Vector3f Vwb_E3f, Eigen::Vector3f ang_vel_body, ros::Time msg_time)
 {
@@ -93,10 +93,10 @@ void publish_ros_tracking_img(cv::Mat image, ros::Time msg_time)
 
     const sensor_msgs::ImagePtr rendered_image_msg = cv_bridge::CvImage(header, "bgr8", image).toImageMsg();
 
-    rendered_image_pub.publish(rendered_image_msg);
+    tracking_img_pub.publish(rendered_image_msg);
 }
 
-void publish_ros_tracking_mappoints(std::vector<ORB_SLAM3::MapPoint*> map_points, ros::Time msg_time)
+void publish_ros_tracked_mappoints(std::vector<ORB_SLAM3::MapPoint*> map_points, ros::Time msg_time)
 {
     sensor_msgs::PointCloud2 cloud = tracked_mappoints_to_pointcloud(map_points, msg_time);
     

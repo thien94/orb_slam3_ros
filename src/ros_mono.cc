@@ -53,7 +53,7 @@ int main(int argc, char **argv)
     ORB_SLAM3::System SLAM(voc_file, settings_file, sensor_type, enable_pangolin);
     ImageGrabber igb(&SLAM);
 
-    ros::Subscriber sub_img0 = node_handler.subscribe("/camera/image_raw", 1, &ImageGrabber::GrabImage, &igb);
+    ros::Subscriber sub_img = node_handler.subscribe("/camera/image_raw", 1, &ImageGrabber::GrabImage, &igb);
 
     setup_ros_publishers(node_handler, image_transport, sensor_type);
 
@@ -90,6 +90,6 @@ void ImageGrabber::GrabImage(const sensor_msgs::ImageConstPtr& msg)
     publish_ros_camera_pose(Twc, msg_time);
     publish_ros_tf_transform(Twc, world_frame_id, cam_frame_id, msg_time);
     
-    publish_ros_tracking_mappoints(mpSLAM->GetTrackedMapPoints(), msg_time);
+    publish_ros_tracked_mappoints(mpSLAM->GetTrackedMapPoints(), msg_time);
     publish_ros_tracking_img(mpSLAM->GetCurrentFrame(), msg_time);
 }

@@ -54,11 +54,11 @@ int main(int argc, char **argv)
     ORB_SLAM3::System SLAM(voc_file, settings_file, sensor_type, enable_pangolin);
     ImageGrabber igb(&SLAM);
 
-    message_filters::Subscriber<sensor_msgs::Image> left_sub(node_handler, "/camera/left/image_raw", 1);
-    message_filters::Subscriber<sensor_msgs::Image> right_sub(node_handler, "/camera/right/image_raw", 1);
+    message_filters::Subscriber<sensor_msgs::Image> sub_img_left(node_handler, "/camera/left/image_raw", 1);
+    message_filters::Subscriber<sensor_msgs::Image> sub_img_right(node_handler, "/camera/right/image_raw", 1);
     typedef message_filters::sync_policies::ApproximateTime<sensor_msgs::Image, sensor_msgs::Image> sync_pol;
-    message_filters::Synchronizer<sync_pol> sync(sync_pol(10), left_sub, right_sub);
-    sync.registerCallback(boost::bind(&ImageGrabber::GrabStereo,&igb,_1,_2));
+    message_filters::Synchronizer<sync_pol> sync(sync_pol(10), sub_img_left, sub_img_right);
+    sync.registerCallback(boost::bind(&ImageGrabber::GrabStereo, &igb, _1, _2));
 
     setup_ros_publishers(node_handler, image_transport, sensor_type);
 
@@ -66,6 +66,7 @@ int main(int argc, char **argv)
 
     // Stop all threads
     SLAM.Shutdown();
+
     ros::shutdown();
 
     return 0;
@@ -105,6 +106,6 @@ void ImageGrabber::GrabStereo(const sensor_msgs::ImageConstPtr& msgLeft,const se
     publish_ros_camera_pose(Twc, msg_time);
     publish_ros_tf_transform(Twc, world_frame_id, cam_frame_id, msg_time);
 
-    publish_ros_tracking_mappoints(mpSLAM->GetTrackedMapPoints(), msg_time);
+    publish_ros_tracked_mappoints(mpSLAM->GetTrackedMapPoints(), msg_time);
     publish_ros_tracking_img(mpSLAM->GetCurrentFrame(), msg_time);
 }

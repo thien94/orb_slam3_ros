@@ -34,13 +34,13 @@ extern ORB_SLAM3::System::eSensor sensor_type;
 extern std::string world_frame_id, cam_frame_id, imu_frame_id;
 
 extern ros::Publisher pose_pub, odom_pub, map_points_pub;
-extern image_transport::Publisher rendered_image_pub;
+extern image_transport::Publisher tracking_img_pub;
 
 void setup_ros_publishers(ros::NodeHandle&, image_transport::ImageTransport&, ORB_SLAM3::System::eSensor);
 
 void publish_ros_camera_pose(Sophus::SE3f, ros::Time);
 void publish_ros_tracking_img(cv::Mat, ros::Time);
-void publish_ros_tracking_mappoints(std::vector<ORB_SLAM3::MapPoint*>, ros::Time);
+void publish_ros_tracked_mappoints(std::vector<ORB_SLAM3::MapPoint*>, ros::Time);
 void publish_ros_tf_transform(Sophus::SE3f, string, string, ros::Time);
 void publish_ros_body_odom(Sophus::SE3f, Eigen::Vector3f, Eigen::Vector3f, ros::Time);
 
