@@ -315,6 +315,9 @@ void Viewer::Run()
         if(menuShowPoints)
             mpMapDrawer->DrawMapPoints();
 
+        // Draw world frame
+        pangolin::glDrawAxis(10.0);
+
         pangolin::FinishFrame();
 
         cv::Mat toShow;

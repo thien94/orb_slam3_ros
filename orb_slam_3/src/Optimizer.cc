@@ -431,6 +431,8 @@ void Optimizer::FullInertialBA(Map *pMap, int its, const bool bFixLocal, const l
                 nNonFixed++;
             VP->setFixed(bFixed);
         }
+        if (i == 0) // Fix the first keyframe at origin
+            VP->setFixed(true);
         optimizer.addVertex(VP);
 
         if(pKFi->bImu)
