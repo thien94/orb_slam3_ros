@@ -25,7 +25,11 @@ python3 -c "import cv2; print(cv2.__version__)"
 ```
 On a freshly installed Ubuntu 20.04.4 LTS with desktop image, OpenCV 4.2.0 is already included. If a newer version is required (>= 3.0), follow [installation instruction](https://docs.opencv.org/4.x/d0/d3d/tutorial_general_install.html) and change the corresponding OpenCV version in `CMakeLists.txt`
 
-
+### (Optional) `hector-trajectory-server`
+Install `hector-trajectory-server` to visualize the trajectory path
+```
+sudo apt install ros-[DISTRO]-hector-trajectory-server
+```
 ## 2. Installation
 ```
 cd ~/catkin_ws/src
@@ -81,6 +85,7 @@ roslaunch orb_slam_3_ros rs_t265_stereo_inertial.launch
 - `/orb_slam3/tracking_image`, image from the left camera with key points and a status text
 - `/orb_slam3/tracked_points`, all key points contained in the sliding window
 - `/orb_slam3/all_points`, all key points in the map
+- `/orb_slam3/kf_markers`, markers for all keyframes' positions
 - `/tf`, with camera and imu-body poses in world frame
 ### Params
 - `voc_file`: path to vocabulary file required by ORB-SLAM3

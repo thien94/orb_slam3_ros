@@ -21,6 +21,7 @@
 #include <sensor_msgs/Imu.h>
 #include <sensor_msgs/PointCloud2.h>
 #include <nav_msgs/Odometry.h>
+#include <visualization_msgs/Marker.h>
 
 #include <message_filters/subscriber.h>
 #include <message_filters/time_synchronizer.h>
@@ -33,7 +34,7 @@
 extern ORB_SLAM3::System::eSensor sensor_type;
 extern std::string world_frame_id, cam_frame_id, imu_frame_id;
 
-extern ros::Publisher pose_pub, odom_pub;
+extern ros::Publisher pose_pub, odom_pub, kf_markers_pub;
 extern ros::Publisher tracked_mappoints_pub, all_mappoints_pub;
 extern image_transport::Publisher tracking_img_pub;
 
@@ -45,6 +46,7 @@ void publish_ros_tracked_points(std::vector<ORB_SLAM3::MapPoint*>, ros::Time);
 void publish_ros_all_points(std::vector<ORB_SLAM3::MapPoint*>, ros::Time);
 void publish_ros_tf_transform(Sophus::SE3f, string, string, ros::Time);
 void publish_ros_body_odom(Sophus::SE3f, Eigen::Vector3f, Eigen::Vector3f, ros::Time);
+void publish_ros_kf_markers(std::vector<Sophus::SE3f>, ros::Time);
 
 cv::Mat SE3f_to_cvMat(Sophus::SE3f);
 tf::Transform SE3f_to_tfTransform(Sophus::SE3f);

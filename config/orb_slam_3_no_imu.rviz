@@ -5,7 +5,6 @@ Panels:
     Property Tree Widget:
       Expanded:
         - /Global Options1
-        - /TF1/Frames1
       Splitter Ratio: 0.5058823823928833
     Tree Height: 391
   - Class: rviz/Selection
@@ -51,6 +50,27 @@ Visualization Manager:
       Plane Cell Count: 20
       Reference Frame: <Fixed Frame>
       Value: true
+    - Class: rviz/TF
+      Enabled: true
+      Frame Timeout: 15
+      Frames:
+        All Enabled: false
+        camera:
+          Value: true
+        world:
+          Value: true
+      Marker Alpha: 1
+      Marker Scale: 1
+      Name: TF
+      Show Arrows: true
+      Show Axes: true
+      Show Names: true
+      Tree:
+        world:
+          camera:
+            {}
+      Update Interval: 0
+      Value: true
     - Class: rviz/Image
       Enabled: true
       Image Topic: /cam0/image_raw
@@ -74,27 +94,6 @@ Visualization Manager:
       Queue Size: 2
       Transport Hint: raw
       Unreliable: false
-      Value: true
-    - Class: rviz/TF
-      Enabled: true
-      Frame Timeout: 15
-      Frames:
-        All Enabled: false
-        camera:
-          Value: true
-        world:
-          Value: true
-      Marker Alpha: 1
-      Marker Scale: 1
-      Name: TF
-      Show Arrows: true
-      Show Axes: true
-      Show Names: true
-      Tree:
-        world:
-          camera:
-            {}
-      Update Interval: 0
       Value: true
     - Alpha: 1
       Autocompute Intensity Bounds: true
@@ -152,6 +151,38 @@ Visualization Manager:
       Use Fixed Frame: true
       Use rainbow: true
       Value: true
+    - Class: rviz/Marker
+      Enabled: true
+      Marker Topic: /orb_slam3/kf_markers
+      Name: kf markers
+      Namespaces:
+        kf_markers: true
+      Queue Size: 100
+      Value: true
+    - Alpha: 1
+      Buffer Length: 1
+      Class: rviz/Path
+      Color: 25; 255; 0
+      Enabled: true
+      Head Diameter: 0.30000001192092896
+      Head Length: 0.20000000298023224
+      Length: 0.30000001192092896
+      Line Style: Billboards
+      Line Width: 0.009999999776482582
+      Name: trajectory
+      Offset:
+        X: 0
+        Y: 0
+        Z: 0
+      Pose Color: 255; 85; 255
+      Pose Style: None
+      Queue Size: 10
+      Radius: 0.029999999329447746
+      Shaft Diameter: 0.10000000149011612
+      Shaft Length: 0.10000000149011612
+      Topic: /orb_slam3_ros/trajectory
+      Unreliable: false
+      Value: true
   Enabled: true
   Global Options:
     Background Color: 46; 52; 54
@@ -180,7 +211,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 4.060526371002197
+      Distance: 5.2452392578125
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -188,17 +219,17 @@ Visualization Manager:
         Value: false
       Field of View: 0.7853981852531433
       Focal Point:
-        X: 0.148057758808136
-        Y: -0.14952880144119263
-        Z: 1.281341552734375
+        X: -0.019698185846209526
+        Y: -0.16791042685508728
+        Z: 1.2893327474594116
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: -1.2247966527938843
+      Pitch: -1.2947965860366821
       Target Frame: <Fixed Frame>
-      Yaw: 4.721836090087891
+      Yaw: 4.716836452484131
     Saved: ~
 Window Geometry:
   Displays:

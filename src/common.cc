@@ -9,7 +9,7 @@
 ORB_SLAM3::System::eSensor sensor_type;
 std::string world_frame_id, cam_frame_id, imu_frame_id;
 
-ros::Publisher pose_pub, odom_pub;
+ros::Publisher pose_pub, odom_pub, kf_markers_pub;
 ros::Publisher tracked_mappoints_pub, all_mappoints_pub;
 image_transport::Publisher tracking_img_pub;
 
@@ -23,6 +23,8 @@ void setup_ros_publishers(ros::NodeHandle &node_handler, image_transport::ImageT
     all_mappoints_pub = node_handler.advertise<sensor_msgs::PointCloud2>("orb_slam3/all_points", 1);
 
     tracking_img_pub = image_transport.advertise("orb_slam3/tracking_image", 1);
+
+    kf_markers_pub = node_handler.advertise<visualization_msgs::Marker>("orb_slam3/kf_markers", 1000);
 
     if (sensor_type == ORB_SLAM3::System::IMU_MONOCULAR || 
         sensor_type == ORB_SLAM3::System::IMU_STEREO || 
@@ -111,6 +113,40 @@ void publish_ros_all_points(std::vector<ORB_SLAM3::MapPoint*> map_points, ros::T
     sensor_msgs::PointCloud2 cloud = mappoint_to_pointcloud(map_points, msg_time);
     
     all_mappoints_pub.publish(cloud);
+}
+
+// More detail: http://docs.ros.org/en/api/visualization_msgs/html/msg/Marker.html
+void publish_ros_kf_markers(std::vector<Sophus::SE3f> vKFposes, ros::Time msg_time)
+{
+    int numKFs = vKFposes.size();
+    if (numKFs == 0)
+        return;
+    
+    visualization_msgs::Marker kf_markers;
+    kf_markers.header.frame_id = world_frame_id;
+    kf_markers.ns = "kf_markers";
+    kf_markers.type = visualization_msgs::Marker::SPHERE_LIST;
+    kf_markers.action = visualization_msgs::Marker::ADD;
+    kf_markers.pose.orientation.w = 1.0;
+    kf_markers.lifetime = ros::Duration();
+
+    kf_markers.id = 0;
+    kf_markers.scale.x = 0.05;
+    kf_markers.scale.y = 0.05;
+    kf_markers.scale.z = 0.05;
+    kf_markers.color.g = 1.0;
+    kf_markers.color.a = 1.0;
+
+    for (int i = 0; i <= numKFs; i++)
+    {
+        geometry_msgs::Point kf_marker;
+        kf_marker.x = vKFposes[i].translation().x();
+        kf_marker.y = vKFposes[i].translation().y();
+        kf_marker.z = vKFposes[i].translation().z();
+        kf_markers.points.push_back(kf_marker);
+    }
+    
+    kf_markers_pub.publish(kf_markers);
 }
 
 //////////////////////////////////////////////////

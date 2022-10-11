@@ -217,6 +217,7 @@ void ImageGrabber::SyncWithImu()
             publish_ros_tracking_img(mpSLAM->GetCurrentFrame(), msg_time);
             publish_ros_tracked_points(mpSLAM->GetTrackedMapPoints(), msg_time);
             publish_ros_all_points(mpSLAM->GetAllMapPoints(), msg_time);
+            publish_ros_kf_markers(mpSLAM->GetAllKeyframePoses(), msg_time);
             
             std::chrono::milliseconds tSleep(1);
             std::this_thread::sleep_for(tSleep);

@@ -1552,5 +1552,32 @@ vector<MapPoint*> System::GetAllMapPoints()
     return pActiveMap->GetAllMapPoints();
 }
 
+vector<Sophus::SE3f> System::GetAllKeyframePoses()
+{
+    vector<KeyFrame*> vpKFs = mpAtlas->GetAllKeyFrames();
+    sort(vpKFs.begin(), vpKFs.end(), KeyFrame::lId);
+
+    vector<Sophus::SE3f> vKFposes;
+    
+    for(size_t i = 0; i < vpKFs.size(); i++)
+    {
+        KeyFrame* pKF = vpKFs[i];
+
+        if(pKF->isBad())
+            continue;
+
+        // Can be world frame to cam0 frame (without IMU) or body in world frame (with IMU)
+        Sophus::SE3f Twb;
+        if (mSensor == IMU_MONOCULAR || mSensor == IMU_STEREO || mSensor == IMU_RGBD)
+            Twb = vpKFs[i]->GetImuPose();
+        else // without IMU
+            Twb = vpKFs[i]->GetPoseInverse();
+
+        vKFposes.push_back(Twb);
+    }
+
+    return vKFposes;
+}
+
 } //namespace ORB_SLAM
 

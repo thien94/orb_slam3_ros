@@ -5,7 +5,6 @@ Panels:
     Property Tree Widget:
       Expanded:
         - /Global Options1
-        - /TF1/Frames1
       Splitter Ratio: 0.5058823823928833
     Tree Height: 391
   - Class: rviz/Selection
@@ -51,30 +50,6 @@ Visualization Manager:
       Plane Cell Count: 20
       Reference Frame: <Fixed Frame>
       Value: true
-    - Class: rviz/Image
-      Enabled: true
-      Image Topic: /cam0/image_raw
-      Max Value: 1
-      Median window: 5
-      Min Value: 0
-      Name: raw left img
-      Normalize Range: true
-      Queue Size: 2
-      Transport Hint: raw
-      Unreliable: false
-      Value: true
-    - Class: rviz/Image
-      Enabled: true
-      Image Topic: /orb_slam3/tracking_image
-      Max Value: 1
-      Median window: 5
-      Min Value: 0
-      Name: tracking img
-      Normalize Range: true
-      Queue Size: 2
-      Transport Hint: raw
-      Unreliable: false
-      Value: true
     - Class: rviz/TF
       Enabled: true
       Frame Timeout: 15
@@ -99,6 +74,30 @@ Visualization Manager:
           imu:
             {}
       Update Interval: 0
+      Value: true
+    - Class: rviz/Image
+      Enabled: true
+      Image Topic: /cam0/image_raw
+      Max Value: 1
+      Median window: 5
+      Min Value: 0
+      Name: raw left img
+      Normalize Range: true
+      Queue Size: 2
+      Transport Hint: raw
+      Unreliable: false
+      Value: true
+    - Class: rviz/Image
+      Enabled: true
+      Image Topic: /orb_slam3/tracking_image
+      Max Value: 1
+      Median window: 5
+      Min Value: 0
+      Name: tracking img
+      Normalize Range: true
+      Queue Size: 2
+      Transport Hint: raw
+      Unreliable: false
       Value: true
     - Alpha: 1
       Autocompute Intensity Bounds: true
@@ -156,6 +155,38 @@ Visualization Manager:
       Use Fixed Frame: true
       Use rainbow: true
       Value: true
+    - Class: rviz/Marker
+      Enabled: true
+      Marker Topic: /orb_slam3/kf_markers
+      Name: kf markers
+      Namespaces:
+        kf_markers: true
+      Queue Size: 100
+      Value: true
+    - Alpha: 1
+      Buffer Length: 1
+      Class: rviz/Path
+      Color: 25; 255; 0
+      Enabled: true
+      Head Diameter: 0.30000001192092896
+      Head Length: 0.20000000298023224
+      Length: 0.30000001192092896
+      Line Style: Billboards
+      Line Width: 0.009999999776482582
+      Name: trajectory
+      Offset:
+        X: 0
+        Y: 0
+        Z: 0
+      Pose Color: 255; 85; 255
+      Pose Style: None
+      Queue Size: 10
+      Radius: 0.029999999329447746
+      Shaft Diameter: 0.10000000149011612
+      Shaft Length: 0.10000000149011612
+      Topic: /orb_slam3_ros/trajectory
+      Unreliable: false
+      Value: true
   Enabled: true
   Global Options:
     Background Color: 46; 52; 54
@@ -184,7 +215,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 8.066043853759766
+      Distance: 5.339291095733643
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -192,17 +223,17 @@ Visualization Manager:
         Value: false
       Field of View: 0.7853981852531433
       Focal Point:
-        X: -0.16566437482833862
-        Y: 1.6685794591903687
-        Z: -0.7949475646018982
+        X: 0.30695757269859314
+        Y: 1.8595293760299683
+        Z: -0.5197516083717346
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.5247970819473267
+      Pitch: 0.5697970390319824
       Target Frame: <Fixed Frame>
-      Yaw: 4.7099928855896
+      Yaw: 4.724989414215088
     Saved: ~
 Window Geometry:
   Displays:
