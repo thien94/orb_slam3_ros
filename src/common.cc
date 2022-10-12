@@ -49,10 +49,12 @@ void publish_ros_topics(ORB_SLAM3::System* mpSLAM, ros::Time msg_time, Eigen::Ve
     if (sensor_type == ORB_SLAM3::System::IMU_MONOCULAR || sensor_type == ORB_SLAM3::System::IMU_STEREO || sensor_type == ORB_SLAM3::System::IMU_RGBD)
     {
         // Body pose and translational velocity can be obtained from ORB-SLAM3
-        // We use the IMU data to get body angular velocity in body frame (Wbb)
         Sophus::SE3f Twb = mpSLAM->GetImuTwb();
         Eigen::Vector3f Vwb = mpSLAM->GetImuVwb();
-        Eigen::Vector3f Wwb = mpSLAM->GetImuTwb().rotationMatrix() * Wbb;
+
+        // IMU provides body angular velocity in body frame (Wbb) which is transformed to world frame (Wwb)
+        Sophus::Matrix3f Rwb = Twb.rotationMatrix();
+        Eigen::Vector3f Wwb = Rwb * Wbb;
 
         publish_ros_tf_transform(Twb, world_frame_id, imu_frame_id, msg_time);
         publish_ros_body_odom(Twb, Vwb, Wwb, msg_time);

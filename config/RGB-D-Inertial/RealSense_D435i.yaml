@@ -8,16 +8,17 @@ File.version: "1.0"
 Camera.type: "PinHole"
 
 # Right Camera calibration and distortion parameters (OpenCV)
-Camera1.fx: 617.201
-Camera1.fy: 617.362
-Camera1.cx: 324.637
-Camera1.cy: 242.462
+Camera1.fx: 384.99951171875
+Camera1.fy: 384.673156738281
+Camera1.cx: 323.999938964844
+Camera1.cy: 238.154174804688
 
 # distortion parameters
-Camera1.k1: 0.0
-Camera1.k2: 0.0
-Camera1.p1: 0.0
-Camera1.p2: 0.0
+Camera1.k1: -0.05877070501446724
+Camera1.k2: 0.07122740894556046
+Camera1.k3: 0.00038883250090293586
+Camera1.p1: 0.0010229706531390548
+Camera1.p2:  -0.023237640038132668
 
 # Camera resolution
 Camera.width: 640
@@ -40,9 +41,9 @@ IMU.T_b_c1: !!opencv-matrix
    rows: 4
    cols: 4
    dt: f
-   data: [0.999903, -0.0138036, -0.00208099, -0.0202141,
-         0.0137985, 0.999902, -0.00243498, 0.00505961,
-         0.0021144, 0.00240603, 0.999995, 0.0114047,
+   data: [0.999903, -0.0138036, -0.00208099, -0.0288703702390194,
+         0.0137985, 0.999902, -0.00243498, -0.00739854155108333,
+         0.0021144, 0.00240603, 0.999995, -0.0157585721462965,
          0.0, 0.0, 0.0, 1.0]
 
 

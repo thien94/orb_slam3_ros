@@ -1571,9 +1571,9 @@ vector<Sophus::SE3f> System::GetAllKeyframePoses()
         if(pKF->isBad())
             continue;
 
-        // Can be world frame to cam0 frame (without IMU) or body in world frame (with IMU)
+        // Twb can be world frame to cam0 frame (without IMU) or body in world frame (with IMU)
         Sophus::SE3f Twb;
-        if (mSensor == IMU_MONOCULAR || mSensor == IMU_STEREO || mSensor == IMU_RGBD)
+        if (mSensor == IMU_MONOCULAR || mSensor == IMU_STEREO || mSensor == IMU_RGBD) // with IMU
             Twb = vpKFs[i]->GetImuPose();
         else // without IMU
             Twb = vpKFs[i]->GetPoseInverse();
