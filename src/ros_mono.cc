@@ -55,7 +55,7 @@ int main(int argc, char **argv)
 
     ros::Subscriber sub_img = node_handler.subscribe("/camera/image_raw", 1, &ImageGrabber::GrabImage, &igb);
 
-    setup_ros_publishers(node_handler, image_transport, sensor_type);
+    setup_ros_publishers(node_handler, image_transport);
 
     ros::spin();
 
@@ -83,15 +83,8 @@ void ImageGrabber::GrabImage(const sensor_msgs::ImageConstPtr& msg)
 
     // ORB-SLAM3 runs in TrackMonocular()
     Sophus::SE3f Tcw = mpSLAM->TrackMonocular(cv_ptr->image, cv_ptr->header.stamp.toSec());
-    Sophus::SE3f Twc = Tcw.inverse();
 
     ros::Time msg_time = msg->header.stamp;
 
-    publish_ros_camera_pose(Twc, msg_time);
-    publish_ros_tf_transform(Twc, world_frame_id, cam_frame_id, msg_time);
-    
-    publish_ros_tracking_img(mpSLAM->GetCurrentFrame(), msg_time);
-    publish_ros_tracked_points(mpSLAM->GetTrackedMapPoints(), msg_time);
-    publish_ros_all_points(mpSLAM->GetAllMapPoints(), msg_time);
-    publish_ros_kf_markers(mpSLAM->GetAllKeyframePoses(), msg_time);
+    publish_ros_topics(mpSLAM, msg_time);
 }

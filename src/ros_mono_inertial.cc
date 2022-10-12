@@ -76,7 +76,7 @@ int main(int argc, char **argv)
     ros::Subscriber sub_imu = node_handler.subscribe("/imu", 1000, &ImuGrabber::GrabImu, &imugb); 
     ros::Subscriber sub_img = node_handler.subscribe("/camera/image_raw", 100, &ImageGrabber::GrabImage, &igb);
 
-    setup_ros_publishers(node_handler, image_transport, sensor_type);
+    setup_ros_publishers(node_handler, image_transport);
 
     std::thread sync_thread(&ImageGrabber::SyncWithImu, &igb);
 
@@ -166,24 +166,10 @@ void ImageGrabber::SyncWithImu()
             }
             mpImuGb->mBufMutex.unlock();
 
-            // Main algorithm runs here
+            // ORB-SLAM3 runs in TrackMonocular()
             Sophus::SE3f Tcw = mpSLAM->TrackMonocular(im, tIm, vImuMeas);
-            Sophus::SE3f Twc = Tcw.inverse();
-            Sophus::SE3f Twb = mpSLAM->GetImuTwb();
-            Eigen::Vector3f Vwb = mpSLAM->GetImuVwb();
-
-            // We use the IMU data to get angular velocity, then transform it to world frame
-            Eigen::Vector3f Wwb = mpSLAM->GetImuTwb().rotationMatrix() * Wbb;
             
-            publish_ros_camera_pose(Twc, msg_time);
-            publish_ros_tf_transform(Twc, world_frame_id, cam_frame_id, msg_time);
-            publish_ros_tf_transform(Twb, world_frame_id, imu_frame_id, msg_time);
-            publish_ros_body_odom(Twb, Vwb, Wwb, msg_time);
-
-            publish_ros_tracking_img(mpSLAM->GetCurrentFrame(), msg_time);
-            publish_ros_tracked_points(mpSLAM->GetTrackedMapPoints(), msg_time);
-            publish_ros_all_points(mpSLAM->GetAllMapPoints(), msg_time);
-            publish_ros_kf_markers(mpSLAM->GetAllKeyframePoses(), msg_time);
+            publish_ros_topics(mpSLAM, msg_time, Wbb);
         }
 
         std::chrono::milliseconds tSleep(1);

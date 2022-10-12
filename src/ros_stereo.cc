@@ -60,7 +60,7 @@ int main(int argc, char **argv)
     message_filters::Synchronizer<sync_pol> sync(sync_pol(10), sub_img_left, sub_img_right);
     sync.registerCallback(boost::bind(&ImageGrabber::GrabStereo, &igb, _1, _2));
 
-    setup_ros_publishers(node_handler, image_transport, sensor_type);
+    setup_ros_publishers(node_handler, image_transport);
 
     ros::spin();
 
@@ -97,17 +97,10 @@ void ImageGrabber::GrabStereo(const sensor_msgs::ImageConstPtr& msgLeft,const se
         return;
     }
 
-    // Main algorithm runs here
+    // ORB-SLAM3 runs in TrackStereo()
     Sophus::SE3f Tcw = mpSLAM->TrackStereo(cv_ptrLeft->image,cv_ptrRight->image,cv_ptrLeft->header.stamp.toSec());
-    Sophus::SE3f Twc = Tcw.inverse();
-
+    
     ros::Time msg_time = cv_ptrLeft->header.stamp;
 
-    publish_ros_camera_pose(Twc, msg_time);
-    publish_ros_tf_transform(Twc, world_frame_id, cam_frame_id, msg_time);
-
-    publish_ros_tracking_img(mpSLAM->GetCurrentFrame(), msg_time);
-    publish_ros_tracked_points(mpSLAM->GetTrackedMapPoints(), msg_time);
-    publish_ros_all_points(mpSLAM->GetAllMapPoints(), msg_time);
-    publish_ros_kf_markers(mpSLAM->GetAllKeyframePoses(), msg_time);
+    publish_ros_topics(mpSLAM, msg_time);
 }

@@ -85,6 +85,7 @@ class System
 public:
     // Input sensor
     enum eSensor{
+        NOT_SET=-1,
         MONOCULAR=0,
         STEREO=1,
         RGBD=2,
@@ -180,7 +181,8 @@ public:
     std::vector<Sophus::SE3f> GetAllKeyframePoses();
     cv::Mat GetCurrentFrame();
 
-    Sophus::SE3<float> GetImuTwb();
+    Sophus::SE3f GetCamTwc();
+    Sophus::SE3f GetImuTwb();
     Eigen::Vector3f GetImuVwb();
     bool isImuPreintegrated();
 

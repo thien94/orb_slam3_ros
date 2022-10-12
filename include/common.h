@@ -38,7 +38,8 @@ extern ros::Publisher pose_pub, odom_pub, kf_markers_pub;
 extern ros::Publisher tracked_mappoints_pub, all_mappoints_pub;
 extern image_transport::Publisher tracking_img_pub;
 
-void setup_ros_publishers(ros::NodeHandle&, image_transport::ImageTransport&, ORB_SLAM3::System::eSensor);
+void setup_ros_publishers(ros::NodeHandle&, image_transport::ImageTransport&);
+void publish_ros_topics(ORB_SLAM3::System*, ros::Time, Eigen::Vector3f = Eigen::Vector3f::Zero());
 
 void publish_ros_camera_pose(Sophus::SE3f, ros::Time);
 void publish_ros_tracking_img(cv::Mat, ros::Time);

@@ -94,7 +94,7 @@ roslaunch orb_slam_3_ros rs_t265_stereo_inertial.launch
 
 ## To-do:
 - ~~Publish basic topics (camera pose, tracking image and point cloud)~~
-- Publish more topics (~~odom~~, ~~full map pointcloud~~, keyframe, loop closure etc.)
+- Publish more topics (~~odom, full map pointcloud, keyframe,~~ loop closure etc.)
 - Add other functions as services (map save/load/merge etc.)
 - Add AR nodes (testing with?)
 - Replace Pangolin (dynamic reconfigure?)

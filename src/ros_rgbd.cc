@@ -60,7 +60,7 @@ int main(int argc, char **argv)
     message_filters::Synchronizer<sync_pol> sync(sync_pol(10), sub_rgb_img, sub_depth_img);
     sync.registerCallback(boost::bind(&ImageGrabber::GrabRGBD, &igb, _1, _2));
 
-    setup_ros_publishers(node_handler, image_transport, sensor_type);
+    setup_ros_publishers(node_handler, image_transport);
 
     ros::spin();
 
@@ -99,15 +99,8 @@ void ImageGrabber::GrabRGBD(const sensor_msgs::ImageConstPtr& msgRGB,const senso
     
     // ORB-SLAM3 runs in TrackRGBD()
     Sophus::SE3f Tcw = mpSLAM->TrackRGBD(cv_ptrRGB->image, cv_ptrD->image, cv_ptrRGB->header.stamp.toSec());
-    Sophus::SE3f Twc = Tcw.inverse();
 
     ros::Time msg_time = cv_ptrRGB->header.stamp;
 
-    publish_ros_camera_pose(Twc, msg_time);
-    publish_ros_tf_transform(Twc, world_frame_id, cam_frame_id, msg_time);
-
-    publish_ros_tracking_img(mpSLAM->GetCurrentFrame(), msg_time);
-    publish_ros_tracked_points(mpSLAM->GetTrackedMapPoints(), msg_time);
-    publish_ros_all_points(mpSLAM->GetAllMapPoints(), msg_time);
-    publish_ros_kf_markers(mpSLAM->GetAllKeyframePoses(), msg_time);
+    publish_ros_topics(mpSLAM, msg_time);
 }

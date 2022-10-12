@@ -78,7 +78,7 @@ int main(int argc, char **argv)
     ros::Subscriber sub_img_left = node_handler.subscribe("/camera/left/image_raw", 100, &ImageGrabber::GrabImageLeft, &igb);
     ros::Subscriber sub_img_right = node_handler.subscribe("/camera/right/image_raw", 100, &ImageGrabber::GrabImageRight, &igb);
 
-    setup_ros_publishers(node_handler, image_transport, sensor_type);
+    setup_ros_publishers(node_handler, image_transport);
 
     std::thread sync_thread(&ImageGrabber::SyncWithImu, &igb);
 
@@ -202,22 +202,8 @@ void ImageGrabber::SyncWithImu()
             
             // ORB-SLAM3 runs in TrackStereo()
             Sophus::SE3f Tcw = mpSLAM->TrackStereo(imLeft,imRight,tImLeft,vImuMeas);
-            Sophus::SE3f Twc = Tcw.inverse();
-            Sophus::SE3f Twb = mpSLAM->GetImuTwb();
-            Eigen::Vector3f Vwb = mpSLAM->GetImuVwb();
 
-            // We use the IMU data to get angular velocity, then transform it to world frame
-            Eigen::Vector3f Wwb = mpSLAM->GetImuTwb().rotationMatrix() * Wbb;
-            
-            publish_ros_camera_pose(Twc, msg_time);
-            publish_ros_tf_transform(Twc, world_frame_id, cam_frame_id, msg_time);
-            publish_ros_tf_transform(Twb, world_frame_id, imu_frame_id, msg_time);
-            publish_ros_body_odom(Twb, Vwb, Wwb, msg_time);
-
-            publish_ros_tracking_img(mpSLAM->GetCurrentFrame(), msg_time);
-            publish_ros_tracked_points(mpSLAM->GetTrackedMapPoints(), msg_time);
-            publish_ros_all_points(mpSLAM->GetAllMapPoints(), msg_time);
-            publish_ros_kf_markers(mpSLAM->GetAllKeyframePoses(), msg_time);
+            publish_ros_topics(mpSLAM, msg_time, Wbb);
             
             std::chrono::milliseconds tSleep(1);
             std::this_thread::sleep_for(tSleep);

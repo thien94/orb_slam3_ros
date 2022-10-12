@@ -6,7 +6,7 @@
 
 #include "common.h"
 
-ORB_SLAM3::System::eSensor sensor_type;
+ORB_SLAM3::System::eSensor sensor_type = ORB_SLAM3::System::NOT_SET;
 std::string world_frame_id, cam_frame_id, imu_frame_id;
 
 ros::Publisher pose_pub, odom_pub, kf_markers_pub;
@@ -14,7 +14,7 @@ ros::Publisher tracked_mappoints_pub, all_mappoints_pub;
 image_transport::Publisher tracking_img_pub;
 
 
-void setup_ros_publishers(ros::NodeHandle &node_handler, image_transport::ImageTransport &image_transport, ORB_SLAM3::System::eSensor sensor_type)
+void setup_ros_publishers(ros::NodeHandle &node_handler, image_transport::ImageTransport &image_transport)
 {
     pose_pub = node_handler.advertise<geometry_msgs::PoseStamped>("orb_slam3/camera_pose", 1);
 
@@ -26,11 +26,36 @@ void setup_ros_publishers(ros::NodeHandle &node_handler, image_transport::ImageT
 
     kf_markers_pub = node_handler.advertise<visualization_msgs::Marker>("orb_slam3/kf_markers", 1000);
 
-    if (sensor_type == ORB_SLAM3::System::IMU_MONOCULAR || 
-        sensor_type == ORB_SLAM3::System::IMU_STEREO || 
-        sensor_type == ORB_SLAM3::System::IMU_RGBD)
+    if (sensor_type == ORB_SLAM3::System::IMU_MONOCULAR || sensor_type == ORB_SLAM3::System::IMU_STEREO || sensor_type == ORB_SLAM3::System::IMU_RGBD)
     {
         odom_pub = node_handler.advertise<nav_msgs::Odometry>("orb_slam3/body_odom", 1);
+    }
+}
+
+void publish_ros_topics(ORB_SLAM3::System* mpSLAM, ros::Time msg_time, Eigen::Vector3f Wbb)
+{
+    Sophus::SE3f Twc = mpSLAM->GetCamTwc();
+    
+    // Common topics
+    publish_ros_camera_pose(Twc, msg_time);
+    publish_ros_tf_transform(Twc, world_frame_id, cam_frame_id, msg_time);
+
+    publish_ros_tracking_img(mpSLAM->GetCurrentFrame(), msg_time);
+    publish_ros_tracked_points(mpSLAM->GetTrackedMapPoints(), msg_time);
+    publish_ros_all_points(mpSLAM->GetAllMapPoints(), msg_time);
+    publish_ros_kf_markers(mpSLAM->GetAllKeyframePoses(), msg_time);
+
+    // IMU-specific topics
+    if (sensor_type == ORB_SLAM3::System::IMU_MONOCULAR || sensor_type == ORB_SLAM3::System::IMU_STEREO || sensor_type == ORB_SLAM3::System::IMU_RGBD)
+    {
+        // Body pose and translational velocity can be obtained from ORB-SLAM3
+        // We use the IMU data to get body angular velocity in body frame (Wbb)
+        Sophus::SE3f Twb = mpSLAM->GetImuTwb();
+        Eigen::Vector3f Vwb = mpSLAM->GetImuVwb();
+        Eigen::Vector3f Wwb = mpSLAM->GetImuTwb().rotationMatrix() * Wbb;
+
+        publish_ros_tf_transform(Twb, world_frame_id, imu_frame_id, msg_time);
+        publish_ros_body_odom(Twb, Vwb, Wwb, msg_time);
     }
 }
 

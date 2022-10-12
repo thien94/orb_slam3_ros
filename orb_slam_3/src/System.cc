@@ -1321,7 +1321,12 @@ cv::Mat System::GetCurrentFrame () {
     return mpFrameDrawer->DrawFrame();
 }
 
-Sophus::SE3<float> System::GetImuTwb() 
+Sophus::SE3f System::GetCamTwc() 
+{
+    return mpTracker->GetCamTwc();
+}
+
+Sophus::SE3f System::GetImuTwb() 
 {
     return mpTracker->GetImuTwb();
 }
