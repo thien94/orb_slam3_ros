@@ -1411,7 +1411,9 @@ void System::SaveAtlas(int type){
         //clock_t start = clock();
 
         // Save the current session
+        // cout << "Starting presave operation" << endl;
         mpAtlas->PreSave();
+        // cout << "Finished presave operation" << endl;
 
         string pathSaveFileName = "./";
         pathSaveFileName = pathSaveFileName.append(mStrSaveAtlasToFile);
@@ -1423,7 +1425,7 @@ void System::SaveAtlas(int type){
 
         if(type == TEXT_FILE) // File text
         {
-            cout << "Starting to write the save text file " << endl;
+            cout << "Starting to write the save text file to " << pathSaveFileName.c_str() << endl;
             std::remove(pathSaveFileName.c_str());
             std::ofstream ofs(pathSaveFileName, std::ios::binary);
             boost::archive::text_oarchive oa(ofs);
@@ -1435,7 +1437,7 @@ void System::SaveAtlas(int type){
         }
         else if(type == BINARY_FILE) // File binary
         {
-            cout << "Starting to write the save binary file" << endl;
+            cout << "Starting to write the save binary file to " << pathSaveFileName.c_str() << endl;
             std::remove(pathSaveFileName.c_str());
             std::ofstream ofs(pathSaveFileName, std::ios::binary);
             boost::archive::binary_oarchive oa(ofs);
@@ -1458,7 +1460,7 @@ bool System::LoadAtlas(int type)
 
     if(type == TEXT_FILE) // File text
     {
-        cout << "Starting to read the save text file " << endl;
+        cout << "Starting to read the save text file " << pathLoadFileName.c_str() << endl;
         std::ifstream ifs(pathLoadFileName, std::ios::binary);
         if(!ifs.good())
         {
@@ -1474,7 +1476,7 @@ bool System::LoadAtlas(int type)
     }
     else if(type == BINARY_FILE) // File binary
     {
-        cout << "Starting to read the save binary file"  << endl;
+        cout << "Starting to read the save binary file " << pathLoadFileName.c_str() << endl;
         std::ifstream ifs(pathLoadFileName, std::ios::binary);
         if(!ifs.good())
         {

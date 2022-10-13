@@ -7,10 +7,10 @@
 # When the variables are commented, the system doesn't load a previous session or not store the current one
 
 # If the LoadFile doesn't exist, the system give a message and create a new Atlas from scratch
-#System.LoadAtlasFromFile: "Session_MH01_MH02_MH03_Stereo60_Pseudo"
+# System.LoadAtlasFromFile: "FullMapEuRoC_MH"
 
 # The store file is created from the current session, if a file with the same name exists it is deleted
-#System.SaveAtlasToFile: "Session_MH01_MH02_MH03_Stereo60_Pseudo"
+# System.SaveAtlasToFile: "FullMapEuRoC_MH"
 
 #--------------------------------------------------------------------------------------------
 # Camera Parameters. Adjust them!
@@ -107,8 +107,8 @@ Viewer.PointSize: 2.0
 Viewer.CameraSize: 0.08
 Viewer.CameraLineWidth: 3.0
 Viewer.ViewpointX: 0.0
-Viewer.ViewpointY: -0.7
-Viewer.ViewpointZ: -1.8
-Viewer.ViewpointF: 500.0
+Viewer.ViewpointY: -1.7
+Viewer.ViewpointZ: 0.8
+Viewer.ViewpointF: -500.0
 Viewer.imageViewScale: 1.0
 

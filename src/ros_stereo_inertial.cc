@@ -83,6 +83,11 @@ int main(int argc, char **argv)
     std::thread sync_thread(&ImageGrabber::SyncWithImu, &igb);
 
     ros::spin();
+    
+    // Stop all threads
+    SLAM.Shutdown();
+    
+    ros::shutdown();
 
     return 0;
 }

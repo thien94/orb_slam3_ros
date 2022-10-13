@@ -72,6 +72,14 @@ roslaunch realsense2_camera rs_t265.launch
 # In another terminal:
 roslaunch orb_slam_3_ros rs_t265_stereo_inertial.launch
 ```
+
+### Multi-map save and load with settings file
+
+- The names of the map file to be loaded and saved are defined by `System.LoadAtlasFromFile` and `System.SaveAtlasToFile` params in the settings file (`.yaml`), respectively.
+- The map file will have `.osa` extension, and is located in the `ROS_HOME` folder (`~/.ros/` by default). 
+- In the first run (no map yet saved), `System.LoadAtlasFromFile` param should be commented out while `System.SaveAtlasToFile` should not be.
+- In subsequent runs, `System.LoadAtlasFromFile` should not be commented out while `System.SaveAtlasToFile` can be set arbitrarily.
+
 ## 4. Topics
 ### Subscribed topics
 - `/camera/image_raw` for Mono(-Inertial) node
