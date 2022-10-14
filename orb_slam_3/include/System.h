@@ -169,7 +169,7 @@ public:
     void SaveTrajectoryKITTI(const string &filename);
 
     // TODO: Save/Load functions
-    // SaveMap(const string &filename);
+    bool SaveMap(const string &filename);
     // LoadMap(const string &filename);
 
     // Information from most recent processed frame
@@ -203,7 +203,7 @@ public:
 
 private:
 
-    void SaveAtlas(int type);
+    bool SaveAtlas(int type);
     bool LoadAtlas(int type);
 
     string CalculateCheckSum(string filename, int type);

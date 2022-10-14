@@ -180,7 +180,7 @@ Visualization Manager:
       Radius: 0.029999999329447746
       Shaft Diameter: 0.10000000149011612
       Shaft Length: 0.10000000149011612
-      Topic: /orb_slam3_ros/trajectory
+      Topic: /orb_slam_3_ros/trajectory
       Unreliable: false
       Value: true
   Enabled: true

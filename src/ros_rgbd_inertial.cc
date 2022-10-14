@@ -26,6 +26,7 @@ public:
     void GrabRGBD(const sensor_msgs::ImageConstPtr& msgRGB, const sensor_msgs::ImageConstPtr& msgD);
     cv::Mat GetImage(const sensor_msgs::ImageConstPtr &img_msg);
     void SyncWithImu();
+    bool SaveMapSrv(orb_slam_3_ros::SaveMap::Request &req, orb_slam_3_ros::SaveMap::Response &res);
 
     queue<sensor_msgs::ImageConstPtr> imgRGBBuf, imgDBuf;
     std::mutex mBufMutex;
@@ -84,6 +85,8 @@ int main(int argc, char **argv)
 
     setup_ros_publishers(node_handler, image_transport);
 
+    ros::ServiceServer save_map_service = node_handler.advertiseService(node_name + "/save_map", &ImageGrabber::SaveMapSrv, &igb);
+
     std::thread sync_thread(&ImageGrabber::SyncWithImu, &igb);
 
     ros::spin();
@@ -96,6 +99,21 @@ int main(int argc, char **argv)
     return 0;
 }
 
+//////////////////////////////////////////////////
+// Functions
+//////////////////////////////////////////////////
+
+bool ImageGrabber::SaveMapSrv(orb_slam_3_ros::SaveMap::Request &req, orb_slam_3_ros::SaveMap::Response &res)
+{
+    res.success = mpSLAM->SaveMap(req.name);
+
+    if (res.success)
+        ROS_INFO("Map was saved as %s.osa", req.name.c_str());
+    else
+        ROS_ERROR("Map could not be saved.");
+
+    return res.success;
+}
 
 void ImageGrabber::GrabRGBD(const sensor_msgs::ImageConstPtr& msgRGB,const sensor_msgs::ImageConstPtr& msgD)
 {

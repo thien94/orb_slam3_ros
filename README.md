@@ -73,12 +73,18 @@ roslaunch realsense2_camera rs_t265.launch
 roslaunch orb_slam_3_ros rs_t265_stereo_inertial.launch
 ```
 
-### Multi-map save and load with settings file
+### Save and load map 
 
-- The names of the map file to be loaded and saved are defined by `System.LoadAtlasFromFile` and `System.SaveAtlasToFile` params in the settings file (`.yaml`), respectively.
-- The map file will have `.osa` extension, and is located in the `ROS_HOME` folder (`~/.ros/` by default). 
-- In the first run (no map yet saved), `System.LoadAtlasFromFile` param should be commented out while `System.SaveAtlasToFile` should not be.
-- In subsequent runs, `System.LoadAtlasFromFile` should not be commented out while `System.SaveAtlasToFile` can be set arbitrarily.
+The map file will have `.osa` extension, and is located in the `ROS_HOME` folder (`~/.ros/` by default).
+#### Load map:
+- Set the name of the map file to be loaded with `System.LoadAtlasFromFile` param in the settings file (`.yaml`).
+- If the map file is not available, `System.LoadAtlasFromFile` param should be commented out otherwise there will be error.
+#### Save map:
+- **Option 1**: If `System.SaveAtlasToFile` is set in the settings file, the map file will be automatically saved when you kill the ros node.
+- **Option 2**: You can also call the following ros service at the end of the session
+```
+rosservice call /orb_slam_3/save_map [file_name]
+```
 
 ## 4. Topics
 ### Subscribed topics

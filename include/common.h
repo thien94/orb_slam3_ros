@@ -27,6 +27,8 @@
 #include <message_filters/time_synchronizer.h>
 #include <message_filters/sync_policies/approximate_time.h>
 
+#include <orb_slam_3_ros/SaveMap.h> // This file is created automatically, see here http://wiki.ros.org/ROS/Tutorials/CreatingMsgAndSrv#Creating_a_srv
+
 // ORB-SLAM3-specific libraries
 #include "System.h"
 #include "ImuTypes.h"

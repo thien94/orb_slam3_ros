@@ -1405,48 +1405,58 @@ void System::InsertTrackTime(double& time)
 }
 #endif
 
-void System::SaveAtlas(int type){
-    if(!mStrSaveAtlasToFile.empty())
-    {
-        //clock_t start = clock();
-
-        // Save the current session
-        // cout << "Starting presave operation" << endl;
-        mpAtlas->PreSave();
-        // cout << "Finished presave operation" << endl;
-
-        string pathSaveFileName = "./";
-        pathSaveFileName = pathSaveFileName.append(mStrSaveAtlasToFile);
-        pathSaveFileName = pathSaveFileName.append(".osa");
-
-        string strVocabularyChecksum = CalculateCheckSum(mStrVocabularyFilePath,TEXT_FILE);
-        std::size_t found = mStrVocabularyFilePath.find_last_of("/\\");
-        string strVocabularyName = mStrVocabularyFilePath.substr(found+1);
-
-        if(type == TEXT_FILE) // File text
+bool System::SaveAtlas(int type){
+    try {
+        if(!mStrSaveAtlasToFile.empty())
         {
-            cout << "Starting to write the save text file to " << pathSaveFileName.c_str() << endl;
-            std::remove(pathSaveFileName.c_str());
-            std::ofstream ofs(pathSaveFileName, std::ios::binary);
-            boost::archive::text_oarchive oa(ofs);
+            //clock_t start = clock();
 
-            oa << strVocabularyName;
-            oa << strVocabularyChecksum;
-            oa << mpAtlas;
-            cout << "End to write the save text file" << endl;
+            // Save the current session
+            // cout << "Starting presave operation" << endl;
+            mpAtlas->PreSave();
+            // cout << "Finished presave operation" << endl;
+
+            string pathSaveFileName = "./";
+            pathSaveFileName = pathSaveFileName.append(mStrSaveAtlasToFile);
+            pathSaveFileName = pathSaveFileName.append(".osa");
+
+            string strVocabularyChecksum = CalculateCheckSum(mStrVocabularyFilePath,TEXT_FILE);
+            std::size_t found = mStrVocabularyFilePath.find_last_of("/\\");
+            string strVocabularyName = mStrVocabularyFilePath.substr(found+1);
+
+            if(type == TEXT_FILE) // File text
+            {
+                cout << "Starting to write the save text file to " << pathSaveFileName.c_str() << endl;
+                std::remove(pathSaveFileName.c_str());
+                std::ofstream ofs(pathSaveFileName, std::ios::binary);
+                boost::archive::text_oarchive oa(ofs);
+
+                oa << strVocabularyName;
+                oa << strVocabularyChecksum;
+                oa << mpAtlas;
+                cout << "End to write the save text file" << endl;
+            }
+            else if(type == BINARY_FILE) // File binary
+            {
+                cout << "Starting to write the save binary file to " << pathSaveFileName.c_str() << endl;
+                std::remove(pathSaveFileName.c_str());
+                std::ofstream ofs(pathSaveFileName, std::ios::binary);
+                boost::archive::binary_oarchive oa(ofs);
+                oa << strVocabularyName;
+                oa << strVocabularyChecksum;
+                oa << mpAtlas;
+                cout << "End to write save binary file" << endl;
+            }
         }
-        else if(type == BINARY_FILE) // File binary
-        {
-            cout << "Starting to write the save binary file to " << pathSaveFileName.c_str() << endl;
-            std::remove(pathSaveFileName.c_str());
-            std::ofstream ofs(pathSaveFileName, std::ios::binary);
-            boost::archive::binary_oarchive oa(ofs);
-            oa << strVocabularyName;
-            oa << strVocabularyChecksum;
-            oa << mpAtlas;
-            cout << "End to write save binary file" << endl;
-        }
+    } catch (const std::exception &e) {
+        std::cerr << e.what() << std::endl;
+        return false;
+    } catch (...) {
+        std::cerr << "Unknows exeption" << std::endl;
+        return false;
     }
+
+    return true;
 }
 
 bool System::LoadAtlas(int type)
@@ -1584,6 +1594,17 @@ vector<Sophus::SE3f> System::GetAllKeyframePoses()
     }
 
     return vKFposes;
+}
+
+bool System::SaveMap(const string &filename)
+{
+    mStrSaveAtlasToFile = filename;
+    if(!mStrSaveAtlasToFile.empty())
+    {
+        Verbose::PrintMess("Atlas saving to file " + mStrSaveAtlasToFile, Verbose::VERBOSITY_NORMAL);
+        return SaveAtlas(FileType::BINARY_FILE);
+    }
+    return false;
 }
 
 } //namespace ORB_SLAM

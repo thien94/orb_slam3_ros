@@ -7,10 +7,10 @@
 # When the variables are commented, the system doesn't load a previous session or not store the current one
 
 # If the LoadFile doesn't exist, the system give a message and create a new Atlas from scratch
-# System.LoadAtlasFromFile: "FullMapEuRoC_MH"
+# System.LoadAtlasFromFile: "MapEuRoCMH_StereoImu"
 
 # The store file is created from the current session, if a file with the same name exists it is deleted
-# System.SaveAtlasToFile: "FullMapEuRoC_MH"
+# System.SaveAtlasToFile: "MapEuRoCMH_StereoImu"
 
 #--------------------------------------------------------------------------------------------
 # Camera Parameters. Adjust them!

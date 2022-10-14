@@ -15,6 +15,8 @@ public:
 
     void GrabImage(const sensor_msgs::ImageConstPtr& msg);
 
+    bool SaveMapSrv(orb_slam_3_ros::SaveMap::Request &req, orb_slam_3_ros::SaveMap::Response &res);
+
     ORB_SLAM3::System* mpSLAM;
 };
 
@@ -57,6 +59,8 @@ int main(int argc, char **argv)
 
     setup_ros_publishers(node_handler, image_transport);
 
+    ros::ServiceServer save_map_service = node_handler.advertiseService(node_name + "/save_map", &ImageGrabber::SaveMapSrv, &igb);
+
     ros::spin();
 
     // Stop all threads
@@ -65,6 +69,22 @@ int main(int argc, char **argv)
     ros::shutdown();
 
     return 0;
+}
+
+//////////////////////////////////////////////////
+// Functions
+//////////////////////////////////////////////////
+
+bool ImageGrabber::SaveMapSrv(orb_slam_3_ros::SaveMap::Request &req, orb_slam_3_ros::SaveMap::Response &res)
+{
+    res.success = mpSLAM->SaveMap(req.name);
+
+    if (res.success)
+        ROS_INFO("Map was saved as %s.osa", req.name.c_str());
+    else
+        ROS_ERROR("Map could not be saved.");
+
+    return res.success;
 }
 
 void ImageGrabber::GrabImage(const sensor_msgs::ImageConstPtr& msg)

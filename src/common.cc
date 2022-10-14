@@ -13,6 +13,9 @@ ros::Publisher pose_pub, odom_pub, kf_markers_pub;
 ros::Publisher tracked_mappoints_pub, all_mappoints_pub;
 image_transport::Publisher tracking_img_pub;
 
+//////////////////////////////////////////////////
+// Main functions
+//////////////////////////////////////////////////
 
 void setup_ros_publishers(ros::NodeHandle &node_handler, image_transport::ImageTransport &image_transport)
 {
@@ -142,7 +145,7 @@ void publish_ros_all_points(std::vector<ORB_SLAM3::MapPoint*> map_points, ros::T
     all_mappoints_pub.publish(cloud);
 }
 
-// More detail: http://docs.ros.org/en/api/visualization_msgs/html/msg/Marker.html
+// More details: http://docs.ros.org/en/api/visualization_msgs/html/msg/Marker.html
 void publish_ros_kf_markers(std::vector<Sophus::SE3f> vKFposes, ros::Time msg_time)
 {
     int numKFs = vKFposes.size();
@@ -179,6 +182,7 @@ void publish_ros_kf_markers(std::vector<Sophus::SE3f> vKFposes, ros::Time msg_ti
 //////////////////////////////////////////////////
 // Miscellaneous functions
 //////////////////////////////////////////////////
+
 sensor_msgs::PointCloud2 mappoint_to_pointcloud(std::vector<ORB_SLAM3::MapPoint*> map_points, ros::Time msg_time)
 {
     const int num_channels = 3; // x y z

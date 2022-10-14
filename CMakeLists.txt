@@ -53,10 +53,21 @@ find_package(catkin REQUIRED COMPONENTS
   rospy
   tf
   tf2
+  message_generation
 )
 
 find_package(Eigen3 3.1.0 REQUIRED)
 find_package(Pangolin REQUIRED)
+
+add_service_files(
+  FILES
+  SaveMap.srv
+)
+
+generate_messages(
+  DEPENDENCIES
+  std_msgs
+)
 
 catkin_package (
   CATKIN_DEPENDS roscpp rospy std_msgs cv_bridge image_transport tf sensor_msgs dynamic_reconfigure message_runtime
