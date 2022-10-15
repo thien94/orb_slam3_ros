@@ -86,7 +86,7 @@ The map file will have `.osa` extension, and is located in the `ROS_HOME` folder
 rosservice call /orb_slam3/save_map [file_name]
 ```
 
-## 4. Topics
+## 4. ROS topics, params and services
 ### Subscribed topics
 - `/camera/image_raw` for Mono(-Inertial) node
 - `/camera/left/image_raw` for Stereo(-Inertial) node
@@ -105,6 +105,10 @@ rosservice call /orb_slam3/save_map [file_name]
 - `voc_file`: path to vocabulary file required by ORB-SLAM3
 - `settings_file`: path to settings file required by ORB-SLAM3
 - `enable_pangolin`: enable/disable ORB-SLAM3's Pangolin viewer and interface. (`true` by default)
+
+### Services
+- `rosservice call /orb_slam3/save_map [file_name]`: save the map as `[file_name].osa` in `ROS_HOME` folder.
+- `rosservice call /orb_slam3/save_traj [file_name]`: save the estimated trajectory of camera and keyframes as `[file_name]_cam_traj.txt` and  `[file_name]_kf_traj.txt` in `ROS_HOME` folder.
 
 ## To-do:
 - ~~Publish basic topics (camera pose, tracking image and point cloud)~~
