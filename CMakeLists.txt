@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8)
-project(orb_slam_3_ros)
+project(orb_slam3_ros)
 
 IF(NOT CMAKE_BUILD_TYPE)
   SET(CMAKE_BUILD_TYPE Release)
@@ -79,88 +79,88 @@ catkin_package (
 include_directories(
   ${PROJECT_SOURCE_DIR}
   ${PROJECT_SOURCE_DIR}/include
-  ${PROJECT_SOURCE_DIR}/orb_slam_3
-  ${PROJECT_SOURCE_DIR}/orb_slam_3/include
-  ${PROJECT_SOURCE_DIR}/orb_slam_3/include/CameraModels
-  ${PROJECT_SOURCE_DIR}/orb_slam_3/Thirdparty
-  ${PROJECT_SOURCE_DIR}/orb_slam_3/Thirdparty/Sophus
+  ${PROJECT_SOURCE_DIR}/orb_slam3
+  ${PROJECT_SOURCE_DIR}/orb_slam3/include
+  ${PROJECT_SOURCE_DIR}/orb_slam3/include/CameraModels
+  ${PROJECT_SOURCE_DIR}/orb_slam3/Thirdparty
+  ${PROJECT_SOURCE_DIR}/orb_slam3/Thirdparty/Sophus
   ${EIGEN3_INCLUDE_DIR}
   ${Pangolin_INCLUDE_DIRS}
   ${catkin_INCLUDE_DIRS}
 )
 
-include(${PROJECT_SOURCE_DIR}/orb_slam_3/Thirdparty/DBoW2/CMakeLists.txt)
-include(${PROJECT_SOURCE_DIR}/orb_slam_3/Thirdparty/g2o/CMakeLists.txt)
+include(${PROJECT_SOURCE_DIR}/orb_slam3/Thirdparty/DBoW2/CMakeLists.txt)
+include(${PROJECT_SOURCE_DIR}/orb_slam3/Thirdparty/g2o/CMakeLists.txt)
 
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/orb_slam_3/lib)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/orb_slam3/lib)
 
 add_library(${PROJECT_NAME} SHARED
-  orb_slam_3/src/System.cc
-  orb_slam_3/src/Tracking.cc
-  orb_slam_3/src/LocalMapping.cc
-  orb_slam_3/src/LoopClosing.cc
-  orb_slam_3/src/ORBextractor.cc
-  orb_slam_3/src/ORBmatcher.cc
-  orb_slam_3/src/FrameDrawer.cc
-  orb_slam_3/src/Converter.cc
-  orb_slam_3/src/MapPoint.cc
-  orb_slam_3/src/KeyFrame.cc
-  orb_slam_3/src/Atlas.cc
-  orb_slam_3/src/Map.cc
-  orb_slam_3/src/MapDrawer.cc
-  orb_slam_3/src/Optimizer.cc
-  orb_slam_3/src/Frame.cc
-  orb_slam_3/src/KeyFrameDatabase.cc
-  orb_slam_3/src/Sim3Solver.cc
-  orb_slam_3/src/Viewer.cc
-  orb_slam_3/src/ImuTypes.cc
-  orb_slam_3/src/G2oTypes.cc
-  orb_slam_3/src/CameraModels/Pinhole.cpp
-  orb_slam_3/src/CameraModels/KannalaBrandt8.cpp
-  orb_slam_3/src/OptimizableTypes.cpp
-  orb_slam_3/src/MLPnPsolver.cpp
-  orb_slam_3/src/GeometricTools.cc
-  orb_slam_3/src/TwoViewReconstruction.cc
-  orb_slam_3/src/Config.cc
-  orb_slam_3/src/Settings.cc
-  orb_slam_3/include/System.h
-  orb_slam_3/include/Tracking.h
-  orb_slam_3/include/LocalMapping.h
-  orb_slam_3/include/LoopClosing.h
-  orb_slam_3/include/ORBextractor.h
-  orb_slam_3/include/ORBmatcher.h
-  orb_slam_3/include/FrameDrawer.h
-  orb_slam_3/include/Converter.h
-  orb_slam_3/include/MapPoint.h
-  orb_slam_3/include/KeyFrame.h
-  orb_slam_3/include/Atlas.h
-  orb_slam_3/include/Map.h
-  orb_slam_3/include/MapDrawer.h
-  orb_slam_3/include/Optimizer.h
-  orb_slam_3/include/Frame.h
-  orb_slam_3/include/KeyFrameDatabase.h
-  orb_slam_3/include/Sim3Solver.h
-  orb_slam_3/include/Viewer.h
-  orb_slam_3/include/ImuTypes.h
-  orb_slam_3/include/G2oTypes.h
-  orb_slam_3/include/CameraModels/GeometricCamera.h
-  orb_slam_3/include/CameraModels/Pinhole.h
-  orb_slam_3/include/CameraModels/KannalaBrandt8.h
-  orb_slam_3/include/OptimizableTypes.h
-  orb_slam_3/include/MLPnPsolver.h
-  orb_slam_3/include/GeometricTools.h
-  orb_slam_3/include/TwoViewReconstruction.h
-  orb_slam_3/include/SerializationUtils.h
-  orb_slam_3/include/Config.h
-  orb_slam_3/include/Settings.h
+  orb_slam3/src/System.cc
+  orb_slam3/src/Tracking.cc
+  orb_slam3/src/LocalMapping.cc
+  orb_slam3/src/LoopClosing.cc
+  orb_slam3/src/ORBextractor.cc
+  orb_slam3/src/ORBmatcher.cc
+  orb_slam3/src/FrameDrawer.cc
+  orb_slam3/src/Converter.cc
+  orb_slam3/src/MapPoint.cc
+  orb_slam3/src/KeyFrame.cc
+  orb_slam3/src/Atlas.cc
+  orb_slam3/src/Map.cc
+  orb_slam3/src/MapDrawer.cc
+  orb_slam3/src/Optimizer.cc
+  orb_slam3/src/Frame.cc
+  orb_slam3/src/KeyFrameDatabase.cc
+  orb_slam3/src/Sim3Solver.cc
+  orb_slam3/src/Viewer.cc
+  orb_slam3/src/ImuTypes.cc
+  orb_slam3/src/G2oTypes.cc
+  orb_slam3/src/CameraModels/Pinhole.cpp
+  orb_slam3/src/CameraModels/KannalaBrandt8.cpp
+  orb_slam3/src/OptimizableTypes.cpp
+  orb_slam3/src/MLPnPsolver.cpp
+  orb_slam3/src/GeometricTools.cc
+  orb_slam3/src/TwoViewReconstruction.cc
+  orb_slam3/src/Config.cc
+  orb_slam3/src/Settings.cc
+  orb_slam3/include/System.h
+  orb_slam3/include/Tracking.h
+  orb_slam3/include/LocalMapping.h
+  orb_slam3/include/LoopClosing.h
+  orb_slam3/include/ORBextractor.h
+  orb_slam3/include/ORBmatcher.h
+  orb_slam3/include/FrameDrawer.h
+  orb_slam3/include/Converter.h
+  orb_slam3/include/MapPoint.h
+  orb_slam3/include/KeyFrame.h
+  orb_slam3/include/Atlas.h
+  orb_slam3/include/Map.h
+  orb_slam3/include/MapDrawer.h
+  orb_slam3/include/Optimizer.h
+  orb_slam3/include/Frame.h
+  orb_slam3/include/KeyFrameDatabase.h
+  orb_slam3/include/Sim3Solver.h
+  orb_slam3/include/Viewer.h
+  orb_slam3/include/ImuTypes.h
+  orb_slam3/include/G2oTypes.h
+  orb_slam3/include/CameraModels/GeometricCamera.h
+  orb_slam3/include/CameraModels/Pinhole.h
+  orb_slam3/include/CameraModels/KannalaBrandt8.h
+  orb_slam3/include/OptimizableTypes.h
+  orb_slam3/include/MLPnPsolver.h
+  orb_slam3/include/GeometricTools.h
+  orb_slam3/include/TwoViewReconstruction.h
+  orb_slam3/include/SerializationUtils.h
+  orb_slam3/include/Config.h
+  orb_slam3/include/Settings.h
 )
 
 target_link_libraries(${PROJECT_NAME}
   ${OpenCV_LIBS}
   ${EIGEN3_LIBS}
   ${Pangolin_LIBRARIES}
-  ${PROJECT_SOURCE_DIR}/orb_slam_3/Thirdparty/DBoW2/lib/libDBoW2.so
-  ${PROJECT_SOURCE_DIR}/orb_slam_3/Thirdparty/g2o/lib/libg2o.so
+  ${PROJECT_SOURCE_DIR}/orb_slam3/Thirdparty/DBoW2/lib/libDBoW2.so
+  ${PROJECT_SOURCE_DIR}/orb_slam3/Thirdparty/g2o/lib/libg2o.so
   -lboost_system
   -lboost_serialization
   -lcrypto

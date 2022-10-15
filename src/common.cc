@@ -6,9 +6,12 @@
 
 #include "common.h"
 
+// Variables for ORB-SLAM3
+ORB_SLAM3::System* pSLAM;
 ORB_SLAM3::System::eSensor sensor_type = ORB_SLAM3::System::NOT_SET;
-std::string world_frame_id, cam_frame_id, imu_frame_id;
 
+// Variables for ROS
+std::string world_frame_id, cam_frame_id, imu_frame_id;
 ros::Publisher pose_pub, odom_pub, kf_markers_pub;
 ros::Publisher tracked_mappoints_pub, all_mappoints_pub;
 image_transport::Publisher tracking_img_pub;
@@ -17,54 +20,71 @@ image_transport::Publisher tracking_img_pub;
 // Main functions
 //////////////////////////////////////////////////
 
-void setup_ros_publishers(ros::NodeHandle &node_handler, image_transport::ImageTransport &image_transport)
+bool save_map_srv(orb_slam3_ros::SaveMap::Request &req, orb_slam3_ros::SaveMap::Response &res)
 {
-    pose_pub = node_handler.advertise<geometry_msgs::PoseStamped>("orb_slam3/camera_pose", 1);
+    res.success = pSLAM->SaveMap(req.name);
 
-    tracked_mappoints_pub = node_handler.advertise<sensor_msgs::PointCloud2>("orb_slam3/tracked_points", 1);
+    if (res.success)
+        ROS_INFO("Map was saved as %s.osa", req.name.c_str());
+    else
+        ROS_ERROR("Map could not be saved.");
 
-    all_mappoints_pub = node_handler.advertise<sensor_msgs::PointCloud2>("orb_slam3/all_points", 1);
+    return res.success;
+}
 
-    tracking_img_pub = image_transport.advertise("orb_slam3/tracking_image", 1);
+void setup_services(ros::NodeHandle &node_handler, std::string node_name)
+{
+    static ros::ServiceServer save_map_service = node_handler.advertiseService(node_name + "/save_map", save_map_srv);
+}
 
-    kf_markers_pub = node_handler.advertise<visualization_msgs::Marker>("orb_slam3/kf_markers", 1000);
+void setup_publishers(ros::NodeHandle &node_handler, image_transport::ImageTransport &image_transport, std::string node_name)
+{
+    pose_pub = node_handler.advertise<geometry_msgs::PoseStamped>(node_name + "/camera_pose", 1);
+
+    tracked_mappoints_pub = node_handler.advertise<sensor_msgs::PointCloud2>(node_name + "/tracked_points", 1);
+
+    all_mappoints_pub = node_handler.advertise<sensor_msgs::PointCloud2>(node_name + "/all_points", 1);
+
+    tracking_img_pub = image_transport.advertise(node_name + "/tracking_image", 1);
+
+    kf_markers_pub = node_handler.advertise<visualization_msgs::Marker>(node_name + "/kf_markers", 1000);
 
     if (sensor_type == ORB_SLAM3::System::IMU_MONOCULAR || sensor_type == ORB_SLAM3::System::IMU_STEREO || sensor_type == ORB_SLAM3::System::IMU_RGBD)
     {
-        odom_pub = node_handler.advertise<nav_msgs::Odometry>("orb_slam3/body_odom", 1);
+        odom_pub = node_handler.advertise<nav_msgs::Odometry>(node_name + "/body_odom", 1);
     }
 }
 
-void publish_ros_topics(ORB_SLAM3::System* mpSLAM, ros::Time msg_time, Eigen::Vector3f Wbb)
+void publish_topics(ros::Time msg_time, Eigen::Vector3f Wbb)
 {
-    Sophus::SE3f Twc = mpSLAM->GetCamTwc();
+    Sophus::SE3f Twc = pSLAM->GetCamTwc();
     
     // Common topics
-    publish_ros_camera_pose(Twc, msg_time);
-    publish_ros_tf_transform(Twc, world_frame_id, cam_frame_id, msg_time);
+    publish_camera_pose(Twc, msg_time);
+    publish_tf_transform(Twc, world_frame_id, cam_frame_id, msg_time);
 
-    publish_ros_tracking_img(mpSLAM->GetCurrentFrame(), msg_time);
-    publish_ros_tracked_points(mpSLAM->GetTrackedMapPoints(), msg_time);
-    publish_ros_all_points(mpSLAM->GetAllMapPoints(), msg_time);
-    publish_ros_kf_markers(mpSLAM->GetAllKeyframePoses(), msg_time);
+    publish_tracking_img(pSLAM->GetCurrentFrame(), msg_time);
+    publish_tracked_points(pSLAM->GetTrackedMapPoints(), msg_time);
+    publish_all_points(pSLAM->GetAllMapPoints(), msg_time);
+    publish_kf_markers(pSLAM->GetAllKeyframePoses(), msg_time);
 
     // IMU-specific topics
     if (sensor_type == ORB_SLAM3::System::IMU_MONOCULAR || sensor_type == ORB_SLAM3::System::IMU_STEREO || sensor_type == ORB_SLAM3::System::IMU_RGBD)
     {
         // Body pose and translational velocity can be obtained from ORB-SLAM3
-        Sophus::SE3f Twb = mpSLAM->GetImuTwb();
-        Eigen::Vector3f Vwb = mpSLAM->GetImuVwb();
+        Sophus::SE3f Twb = pSLAM->GetImuTwb();
+        Eigen::Vector3f Vwb = pSLAM->GetImuVwb();
 
         // IMU provides body angular velocity in body frame (Wbb) which is transformed to world frame (Wwb)
         Sophus::Matrix3f Rwb = Twb.rotationMatrix();
         Eigen::Vector3f Wwb = Rwb * Wbb;
 
-        publish_ros_tf_transform(Twb, world_frame_id, imu_frame_id, msg_time);
-        publish_ros_body_odom(Twb, Vwb, Wwb, msg_time);
+        publish_tf_transform(Twb, world_frame_id, imu_frame_id, msg_time);
+        publish_body_odom(Twb, Vwb, Wwb, msg_time);
     }
 }
 
-void publish_ros_body_odom(Sophus::SE3f Twb_SE3f, Eigen::Vector3f Vwb_E3f, Eigen::Vector3f ang_vel_body, ros::Time msg_time)
+void publish_body_odom(Sophus::SE3f Twb_SE3f, Eigen::Vector3f Vwb_E3f, Eigen::Vector3f ang_vel_body, ros::Time msg_time)
 {
     nav_msgs::Odometry odom_msg;
     odom_msg.child_frame_id = imu_frame_id;
@@ -91,7 +111,7 @@ void publish_ros_body_odom(Sophus::SE3f Twb_SE3f, Eigen::Vector3f Vwb_E3f, Eigen
     odom_pub.publish(odom_msg);
 }
 
-void publish_ros_camera_pose(Sophus::SE3f Tcw_SE3f, ros::Time msg_time)
+void publish_camera_pose(Sophus::SE3f Tcw_SE3f, ros::Time msg_time)
 {
     geometry_msgs::PoseStamped pose_msg;
     pose_msg.header.frame_id = world_frame_id;
@@ -109,7 +129,7 @@ void publish_ros_camera_pose(Sophus::SE3f Tcw_SE3f, ros::Time msg_time)
     pose_pub.publish(pose_msg);
 }
 
-void publish_ros_tf_transform(Sophus::SE3f T_SE3f, string frame_id, string child_frame_id, ros::Time msg_time)
+void publish_tf_transform(Sophus::SE3f T_SE3f, string frame_id, string child_frame_id, ros::Time msg_time)
 {
     tf::Transform tf_transform = SE3f_to_tfTransform(T_SE3f);
 
@@ -118,7 +138,7 @@ void publish_ros_tf_transform(Sophus::SE3f T_SE3f, string frame_id, string child
     tf_broadcaster.sendTransform(tf::StampedTransform(tf_transform, msg_time, frame_id, child_frame_id));
 }
 
-void publish_ros_tracking_img(cv::Mat image, ros::Time msg_time)
+void publish_tracking_img(cv::Mat image, ros::Time msg_time)
 {
     std_msgs::Header header;
 
@@ -131,14 +151,14 @@ void publish_ros_tracking_img(cv::Mat image, ros::Time msg_time)
     tracking_img_pub.publish(rendered_image_msg);
 }
 
-void publish_ros_tracked_points(std::vector<ORB_SLAM3::MapPoint*> tracked_points, ros::Time msg_time)
+void publish_tracked_points(std::vector<ORB_SLAM3::MapPoint*> tracked_points, ros::Time msg_time)
 {
     sensor_msgs::PointCloud2 cloud = mappoint_to_pointcloud(tracked_points, msg_time);
     
     tracked_mappoints_pub.publish(cloud);
 }
 
-void publish_ros_all_points(std::vector<ORB_SLAM3::MapPoint*> map_points, ros::Time msg_time)
+void publish_all_points(std::vector<ORB_SLAM3::MapPoint*> map_points, ros::Time msg_time)
 {
     sensor_msgs::PointCloud2 cloud = mappoint_to_pointcloud(map_points, msg_time);
     
@@ -146,7 +166,7 @@ void publish_ros_all_points(std::vector<ORB_SLAM3::MapPoint*> map_points, ros::T
 }
 
 // More details: http://docs.ros.org/en/api/visualization_msgs/html/msg/Marker.html
-void publish_ros_kf_markers(std::vector<Sophus::SE3f> vKFposes, ros::Time msg_time)
+void publish_kf_markers(std::vector<Sophus::SE3f> vKFposes, ros::Time msg_time)
 {
     int numKFs = vKFposes.size();
     if (numKFs == 0)

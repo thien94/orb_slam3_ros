@@ -11,13 +11,9 @@ using namespace std;
 class ImageGrabber
 {
 public:
-    ImageGrabber(ORB_SLAM3::System* pSLAM):mpSLAM(pSLAM){}
+    ImageGrabber(){};
 
     void GrabImage(const sensor_msgs::ImageConstPtr& msg);
-
-    bool SaveMapSrv(orb_slam_3_ros::SaveMap::Request &req, orb_slam_3_ros::SaveMap::Response &res);
-
-    ORB_SLAM3::System* mpSLAM;
 };
 
 int main(int argc, char **argv)
@@ -29,8 +25,9 @@ int main(int argc, char **argv)
         ROS_WARN ("Arguments supplied via command line are ignored.");
     }
 
-    ros::NodeHandle node_handler;
     std::string node_name = ros::this_node::getName();
+
+    ros::NodeHandle node_handler;
     image_transport::ImageTransport image_transport(node_handler);
 
     std::string voc_file, settings_file;
@@ -52,20 +49,18 @@ int main(int argc, char **argv)
 
     // Create SLAM system. It initializes all system threads and gets ready to process frames.
     sensor_type = ORB_SLAM3::System::MONOCULAR;
-    ORB_SLAM3::System SLAM(voc_file, settings_file, sensor_type, enable_pangolin);
-    ImageGrabber igb(&SLAM);
+    pSLAM = new ORB_SLAM3::System(voc_file, settings_file, sensor_type, enable_pangolin);
+    ImageGrabber igb;
 
     ros::Subscriber sub_img = node_handler.subscribe("/camera/image_raw", 1, &ImageGrabber::GrabImage, &igb);
 
-    setup_ros_publishers(node_handler, image_transport);
-
-    ros::ServiceServer save_map_service = node_handler.advertiseService(node_name + "/save_map", &ImageGrabber::SaveMapSrv, &igb);
+    setup_publishers(node_handler, image_transport, node_name);
+    setup_services(node_handler, node_name);
 
     ros::spin();
 
     // Stop all threads
-    SLAM.Shutdown();
-
+    pSLAM->Shutdown();
     ros::shutdown();
 
     return 0;
@@ -74,18 +69,6 @@ int main(int argc, char **argv)
 //////////////////////////////////////////////////
 // Functions
 //////////////////////////////////////////////////
-
-bool ImageGrabber::SaveMapSrv(orb_slam_3_ros::SaveMap::Request &req, orb_slam_3_ros::SaveMap::Response &res)
-{
-    res.success = mpSLAM->SaveMap(req.name);
-
-    if (res.success)
-        ROS_INFO("Map was saved as %s.osa", req.name.c_str());
-    else
-        ROS_ERROR("Map could not be saved.");
-
-    return res.success;
-}
 
 void ImageGrabber::GrabImage(const sensor_msgs::ImageConstPtr& msg)
 {
@@ -102,9 +85,9 @@ void ImageGrabber::GrabImage(const sensor_msgs::ImageConstPtr& msg)
     }
 
     // ORB-SLAM3 runs in TrackMonocular()
-    Sophus::SE3f Tcw = mpSLAM->TrackMonocular(cv_ptr->image, cv_ptr->header.stamp.toSec());
+    Sophus::SE3f Tcw = pSLAM->TrackMonocular(cv_ptr->image, cv_ptr->header.stamp.toSec());
 
     ros::Time msg_time = msg->header.stamp;
 
-    publish_ros_topics(mpSLAM, msg_time);
+    publish_topics(msg_time);
 }

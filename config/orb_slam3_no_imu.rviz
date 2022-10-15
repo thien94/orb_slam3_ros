@@ -46,7 +46,7 @@ Visualization Manager:
         X: 0
         Y: 0
         Z: 0
-      Plane: XY
+      Plane: XZ
       Plane Cell Count: 20
       Reference Frame: <Fixed Frame>
       Value: true
@@ -56,8 +56,6 @@ Visualization Manager:
       Frames:
         All Enabled: false
         camera:
-          Value: true
-        imu:
           Value: true
         world:
           Value: true
@@ -70,8 +68,6 @@ Visualization Manager:
       Tree:
         world:
           camera:
-            {}
-          imu:
             {}
       Update Interval: 0
       Value: true
@@ -102,8 +98,8 @@ Visualization Manager:
     - Alpha: 1
       Autocompute Intensity Bounds: true
       Autocompute Value Bounds:
-        Max Value: 10
-        Min Value: -10
+        Max Value: 2.8732001781463623
+        Min Value: 0
         Value: true
       Axis: Z
       Channel Name: intensity
@@ -119,13 +115,13 @@ Visualization Manager:
       Position Transformer: XYZ
       Queue Size: 10
       Selectable: true
-      Size (Pixels): 3
+      Size (Pixels): 5
       Size (m): 0.029999999329447746
       Style: Spheres
       Topic: /orb_slam3/tracked_points
       Unreliable: false
       Use Fixed Frame: true
-      Use rainbow: true
+      Use rainbow: false
       Value: true
     - Alpha: 1
       Autocompute Intensity Bounds: true
@@ -184,7 +180,7 @@ Visualization Manager:
       Radius: 0.029999999329447746
       Shaft Diameter: 0.10000000149011612
       Shaft Length: 0.10000000149011612
-      Topic: /orb_slam_3_ros/trajectory
+      Topic: /orb_slam3_ros/trajectory
       Unreliable: false
       Value: true
   Enabled: true
@@ -215,7 +211,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 5.339291095733643
+      Distance: 5.2452392578125
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -223,17 +219,17 @@ Visualization Manager:
         Value: false
       Field of View: 0.7853981852531433
       Focal Point:
-        X: 0.30695757269859314
-        Y: 1.8595293760299683
-        Z: -0.5197516083717346
+        X: -0.019698185846209526
+        Y: -0.16791042685508728
+        Z: 1.2893327474594116
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.5697970390319824
+      Pitch: -1.2947965860366821
       Target Frame: <Fixed Frame>
-      Yaw: 4.724989414215088
+      Yaw: 4.716836452484131
     Saved: ~
 Window Geometry:
   Displays:

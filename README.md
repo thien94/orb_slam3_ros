@@ -33,7 +33,7 @@ sudo apt install ros-[DISTRO]-hector-trajectory-server
 ## 2. Installation
 ```
 cd ~/catkin_ws/src
-git clone https://github.com/thien94/orb_slam_3_ros.git
+git clone https://github.com/thien94/orb_slam3_ros.git
 cd ../
 catkin build
 ```
@@ -42,21 +42,21 @@ catkin build
 ### Mono-inertial mode with [EuRoC](https://projects.asl.ethz.ch/datasets/doku.php?id=kmavvisualinertialdatasets)'s [`MH_01_easy.bag`]( http://robotics.ethz.ch/~asl-datasets/ijrr_euroc_mav_dataset/machine_hall/MH_01_easy/MH_01_easy.bag):
 ```
 # In one terminal:
-roslaunch orb_slam_3_ros euroc_mono_inertial.launch
+roslaunch orb_slam3_ros euroc_mono_inertial.launch
 # In another terminal:
 rosbag play MH_01_easy.bag
 ```
 ### Stereo-inertial mode with [TUM-VI](https://vision.in.tum.de/data/datasets/visual-inertial-dataset)'s [`dataset-corridor1_512_16.bag`](https://vision.in.tum.de/tumvi/calibrated/512_16/dataset-corridor1_512_16.bag)
 ```
 # In one terminal:
-roslaunch orb_slam_3_ros tum_vi_stereo_inertial.launch
+roslaunch orb_slam3_ros tum_vi_stereo_inertial.launch
 # In another terminal:
 rosbag play dataset-corridor1_512_16.bag
 ```
 ### RGB-D mode with [TUM](http://vision.in.tum.de/data/datasets/rgbd-dataset/download)'s [`rgbd_dataset_freiburg1_xyz.bag`](https://vision.in.tum.de/rgbd/dataset/freiburg1/rgbd_dataset_freiburg1_xyz.bag)
 ```
 # In one terminal:
-roslaunch orb_slam_3_ros tum_rgbd.launch
+roslaunch orb_slam3_ros tum_rgbd.launch
 # In another terminal:
 rosbag play rgbd_dataset_freiburg1_xyz.bag
 ```
@@ -64,13 +64,13 @@ rosbag play rgbd_dataset_freiburg1_xyz.bag
 
 ### Live stereo-inertial mode with Realsense T265
 - Modify the original `rs_t265.launch` to enable fisheye images and imu data (change `unite_imu_method` to `linear_interpolation`).
-- Run `rs-enumerate-devices -c` to get the calibration parameters and modify `config/Stereo-Inertial/RealSense_T265.yaml` accordingly.
+- Run `rs-enumerate-devices -c` to get the calibration parameters and modify `config/Stereo-Inertial/RealSense_T265.yaml` accordingly. A detailed explaination can be found [here](https://github.com/shanpenghui/ORB_SLAM3_Fixed#73-set-camera-intrinsic--extrinsic-parameters).
 - Run:
 ```
 # In one terminal:
 roslaunch realsense2_camera rs_t265.launch
 # In another terminal:
-roslaunch orb_slam_3_ros rs_t265_stereo_inertial.launch
+roslaunch orb_slam3_ros rs_t265_stereo_inertial.launch
 ```
 
 ### Save and load map 
@@ -83,7 +83,7 @@ The map file will have `.osa` extension, and is located in the `ROS_HOME` folder
 - **Option 1**: If `System.SaveAtlasToFile` is set in the settings file, the map file will be automatically saved when you kill the ros node.
 - **Option 2**: You can also call the following ros service at the end of the session
 ```
-rosservice call /orb_slam_3/save_map [file_name]
+rosservice call /orb_slam3/save_map [file_name]
 ```
 
 ## 4. Topics
@@ -108,7 +108,6 @@ rosservice call /orb_slam_3/save_map [file_name]
 
 ## To-do:
 - ~~Publish basic topics (camera pose, tracking image and point cloud)~~
-- Publish more topics (~~odom, full map pointcloud, keyframe,~~ loop closure etc.)
-- Add other functions as services (map save/load/merge etc.)
-- Add AR nodes (testing with?)
+- ~~Publish more topics (odom, full map pointcloud, keyframe, etc.)~~
+- Add other functions as services (~~map save/load~~, save estimated trajectory, etc.)
 - Replace Pangolin (dynamic reconfigure?)

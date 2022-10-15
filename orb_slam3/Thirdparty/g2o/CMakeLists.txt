@@ -1,4 +1,4 @@
-set(g2o_SOURCE_DIR "${PROJECT_SOURCE_DIR}/orb_slam_3/Thirdparty/g2o")
+set(g2o_SOURCE_DIR "${PROJECT_SOURCE_DIR}/orb_slam3/Thirdparty/g2o")
 
 SET(g2o_C_FLAGS)
 SET(g2o_CXX_FLAGS)

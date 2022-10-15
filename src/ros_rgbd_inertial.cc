@@ -21,17 +21,14 @@ public:
 class ImageGrabber
 {
 public:
-    ImageGrabber(ORB_SLAM3::System* pSLAM, ImuGrabber *pImuGb): mpSLAM(pSLAM), mpImuGb(pImuGb){}
+    ImageGrabber(ImuGrabber *pImuGb): mpImuGb(pImuGb){}
 
     void GrabRGBD(const sensor_msgs::ImageConstPtr& msgRGB, const sensor_msgs::ImageConstPtr& msgD);
     cv::Mat GetImage(const sensor_msgs::ImageConstPtr &img_msg);
     void SyncWithImu();
-    bool SaveMapSrv(orb_slam_3_ros::SaveMap::Request &req, orb_slam_3_ros::SaveMap::Response &res);
 
     queue<sensor_msgs::ImageConstPtr> imgRGBBuf, imgDBuf;
     std::mutex mBufMutex;
-   
-    ORB_SLAM3::System* mpSLAM;
     ImuGrabber *mpImuGb;
 };
 
@@ -45,8 +42,9 @@ int main(int argc, char **argv)
         ROS_WARN ("Arguments supplied via command line are ignored.");
     }
 
-    ros::NodeHandle node_handler;
     std::string node_name = ros::this_node::getName();
+
+    ros::NodeHandle node_handler;
     image_transport::ImageTransport image_transport(node_handler);
 
     std::string voc_file, settings_file;
@@ -69,10 +67,10 @@ int main(int argc, char **argv)
 
     // Create SLAM system. It initializes all system threads and gets ready to process frames.
     sensor_type = ORB_SLAM3::System::IMU_RGBD;
-    ORB_SLAM3::System SLAM(voc_file, settings_file, sensor_type, enable_pangolin);
+    pSLAM = new ORB_SLAM3::System(voc_file, settings_file, sensor_type, enable_pangolin);
 
     ImuGrabber imugb;
-    ImageGrabber igb(&SLAM, &imugb);
+    ImageGrabber igb(&imugb);
 
     ros::Subscriber sub_imu = node_handler.subscribe("/imu", 1000, &ImuGrabber::GrabImu, &imugb);
 
@@ -83,17 +81,15 @@ int main(int argc, char **argv)
     message_filters::Synchronizer<sync_pol> sync(sync_pol(10), sub_rgb_img, sub_depth_img);
     sync.registerCallback(boost::bind(&ImageGrabber::GrabRGBD, &igb, _1, _2));
 
-    setup_ros_publishers(node_handler, image_transport);
-
-    ros::ServiceServer save_map_service = node_handler.advertiseService(node_name + "/save_map", &ImageGrabber::SaveMapSrv, &igb);
+    setup_publishers(node_handler, image_transport, node_name);
+    setup_services(node_handler, node_name);
 
     std::thread sync_thread(&ImageGrabber::SyncWithImu, &igb);
 
     ros::spin();
 
     // Stop all threads
-    SLAM.Shutdown();
-    
+    pSLAM->Shutdown();
     ros::shutdown();
 
     return 0;
@@ -102,18 +98,6 @@ int main(int argc, char **argv)
 //////////////////////////////////////////////////
 // Functions
 //////////////////////////////////////////////////
-
-bool ImageGrabber::SaveMapSrv(orb_slam_3_ros::SaveMap::Request &req, orb_slam_3_ros::SaveMap::Response &res)
-{
-    res.success = mpSLAM->SaveMap(req.name);
-
-    if (res.success)
-        ROS_INFO("Map was saved as %s.osa", req.name.c_str());
-    else
-        ROS_ERROR("Map could not be saved.");
-
-    return res.success;
-}
 
 void ImageGrabber::GrabRGBD(const sensor_msgs::ImageConstPtr& msgRGB,const sensor_msgs::ImageConstPtr& msgD)
 {
@@ -192,9 +176,9 @@ void ImageGrabber::SyncWithImu()
             mpImuGb->mBufMutex.unlock();
 
             // ORB-SLAM3 runs in TrackRGBD()
-            Sophus::SE3f Tcw = mpSLAM->TrackRGBD(im, depth, tIm, vImuMeas);
+            Sophus::SE3f Tcw = pSLAM->TrackRGBD(im, depth, tIm, vImuMeas);
             
-            publish_ros_topics(mpSLAM, msg_time, Wbb);
+            publish_topics(msg_time, Wbb);
         }
 
         std::chrono::milliseconds tSleep(1);

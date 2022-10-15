@@ -2,15 +2,15 @@
     <param name="use_sim_time" value="false" />
 
     <!-- Main node -->
-    <node name="orb_slam_3" pkg="orb_slam_3_ros" type="ros_stereo_inertial" output="screen">
+    <node name="orb_slam3" pkg="orb_slam3_ros" type="ros_stereo_inertial" output="screen">
         <!-- change the topics according to the dataset -->
         <remap from="/camera/left/image_raw"    to="/camera/fisheye1/image_raw"/>
         <remap from="/camera/right/image_raw"   to="/camera/fisheye2/image_raw"/>
         <remap from="/imu"                      to="/camera/imu"/>
 
         <!-- Parameters for original ORB-SLAM3 -->
-        <param name="voc_file"      type="string" value="$(find orb_slam_3_ros)/orb_slam_3/Vocabulary/ORBvoc.txt.bin"/>
-        <param name="settings_file" type="string" value="$(find orb_slam_3_ros)/config/Stereo-Inertial/RealSense_T265.yaml"/>
+        <param name="voc_file"      type="string" value="$(find orb_slam3_ros)/orb_slam3/Vocabulary/ORBvoc.txt.bin"/>
+        <param name="settings_file" type="string" value="$(find orb_slam3_ros)/config/Stereo-Inertial/RealSense_T265.yaml"/>
 
         <!-- Parameters for ROS -->
         <param name="world_frame_id"    type="string"   value="world" />
@@ -20,10 +20,10 @@
     </node>
     
     <!-- Visualization -->
-    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find orb_slam_3_ros)/config/orb_slam_3_with_imu.rviz" output="screen" />
+    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find orb_slam3_ros)/config/orb_slam3_with_imu.rviz" output="screen" />
     
     <!-- Trajectory path -->
-    <node pkg="hector_trajectory_server" type="hector_trajectory_server" name="trajectory_server_orb_slam3" output="screen" ns="orb_slam_3_ros" >
+    <node pkg="hector_trajectory_server" type="hector_trajectory_server" name="trajectory_server_orb_slam3" output="screen" ns="orb_slam3_ros" >
         <param name="/target_frame_name" value="/world" />
         <param name="/source_frame_name" value="/imu" />
         <param name="/trajectory_update_rate" value="20.0" />
