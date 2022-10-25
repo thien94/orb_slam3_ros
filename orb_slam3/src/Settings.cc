@@ -315,10 +315,10 @@ namespace ORB_SLAM3 {
             float cx = readParameter<float>(fSettings,"Camera2.cx",found);
             float cy = readParameter<float>(fSettings,"Camera2.cy",found);
 
-            float k0 = readParameter<float>(fSettings,"Camera1.k1",found);
-            float k1 = readParameter<float>(fSettings,"Camera1.k2",found);
-            float k2 = readParameter<float>(fSettings,"Camera1.k3",found);
-            float k3 = readParameter<float>(fSettings,"Camera1.k4",found);
+            float k0 = readParameter<float>(fSettings,"Camera2.k1",found);
+            float k1 = readParameter<float>(fSettings,"Camera2.k2",found);
+            float k2 = readParameter<float>(fSettings,"Camera2.k3",found);
+            float k3 = readParameter<float>(fSettings,"Camera2.k4",found);
 
 
             vCalibration = {fx,fy,cx,cy,k0,k1,k2,k3};
@@ -514,6 +514,11 @@ namespace ORB_SLAM3 {
         calibration1_->setParameter(P1.at<double>(0,2), 2);
         calibration1_->setParameter(P1.at<double>(1,2), 3);
 
+        calibration2_->setParameter(P2.at<double>(0,0), 0);
+        calibration2_->setParameter(P2.at<double>(1,1), 1);
+        calibration2_->setParameter(P2.at<double>(0,2), 2);
+        calibration2_->setParameter(P2.at<double>(1,2), 3);
+
         //Update bf
         bf_ = b_ * P1.at<double>(0,0);
 
@@ -558,14 +563,14 @@ namespace ORB_SLAM3 {
             else{
                 output << "Kannala-Brandt";
             }
-            output << "" << ": [";
+            output << ")" << ": [";
             for(size_t i = 0; i < settings.originalCalib2_->size(); i++){
                 output << " " << settings.originalCalib2_->getParameter(i);
             }
             output << " ]" << endl;
 
             if(!settings.vPinHoleDistorsion2_.empty()){
-                output << "\t-Camera 1 distortion parameters: [ ";
+                output << "\t-Camera 2 distortion parameters: [ ";
                 for(float d : settings.vPinHoleDistorsion2_){
                     output << " " << d;
                 }
@@ -582,6 +587,14 @@ namespace ORB_SLAM3 {
                 output << " " << settings.calibration1_->getParameter(i);
             }
             output << " ]" << endl;
+            
+            if(settings.sensor_ == System::STEREO || settings.sensor_ == System::IMU_STEREO){
+                output << "\t-Camera 2 parameters after rectification: [ ";
+                for(size_t i = 0; i < settings.calibration2_->size(); i++){
+                    output << " " << settings.calibration2_->getParameter(i);
+                }
+                output << " ]" << endl;
+            }
         }
         else if(settings.bNeedToResize1_){
             output << "\t-Camera 1 parameters after resize: [ ";

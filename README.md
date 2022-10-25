@@ -38,7 +38,17 @@ cd ../
 catkin build
 ```
 
-## 3. Run examples
+## 3. Run Examples
+
+### Mono/stereo mode with [NTU VIRAL](https://ntu-aris.github.io/ntu_viral_dataset/)'s [`eee_01`](https://researchdata.ntu.edu.sg/api/access/datafile/68133):
+
+```
+# In one terminal:
+roslaunch orb_slam3_ros ntuviral_mono.launch # or ntuviral_stereo.launch
+# In another terminal:
+rosbag play eee_01.bag  # The UAV starts moving at t~40s
+```
+
 ### Mono-inertial mode with [EuRoC](https://projects.asl.ethz.ch/datasets/doku.php?id=kmavvisualinertialdatasets)'s [`MH_01_easy.bag`]( http://robotics.ethz.ch/~asl-datasets/ijrr_euroc_mav_dataset/machine_hall/MH_01_easy/MH_01_easy.bag):
 ```
 # In one terminal:
@@ -113,5 +123,5 @@ rosservice call /orb_slam3/save_map [file_name]
 ## To-do:
 - ~~Publish basic topics (camera pose, tracking image and point cloud)~~
 - ~~Publish more topics (odom, full map pointcloud, keyframe, etc.)~~
-- Add other functions as services (~~map save/load~~, save estimated trajectory, etc.)
-- Replace Pangolin (dynamic reconfigure?)
+- ~~Add other functions as services (map save/load, save estimated trajectory, etc.)~~
+- Add docker support
