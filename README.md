@@ -40,13 +40,22 @@ catkin build
 
 ## 3. Run Examples
 
-### Mono/stereo mode with [NTU VIRAL](https://ntu-aris.github.io/ntu_viral_dataset/)'s [`eee_01`](https://researchdata.ntu.edu.sg/api/access/datafile/68133):
+### Mono mode with [NTU VIRAL](https://ntu-aris.github.io/ntu_viral_dataset/)'s [`eee_01`](https://researchdata.ntu.edu.sg/api/access/datafile/68133):
 
 ```
 # In one terminal:
-roslaunch orb_slam3_ros ntuviral_mono.launch # or ntuviral_stereo.launch
+roslaunch orb_slam3_ros ntuviral_mono.launch
 # In another terminal:
-rosbag play eee_01.bag  # The UAV starts moving at t~40s
+rosbag play eee_01.bag -s 50 # The UAV starts moving at t~50s
+```
+### Stereo mode with [KITTI](https://www.cvlibs.net/datasets/kitti/index.php)'s [`2011_09_26`](https://www.cvlibs.net/datasets/kitti/raw_data.php):
+- First, download KITTI dataset and convert the raw data into bag file following [this instruction](https://stevenliu216.github.io/2018/08/05/working-with-kitti-ros/). You can automate the downloading process using [this script](https://github.com/Deepak3994/Kitti-Dataset).
+- Run the example:
+```
+# In one terminal:
+roslaunch orb_slam3_ros kitti_stereo.launch
+# In another terminal:
+rosbag play kitti_2011_09_26_drive_0002_synced.bag
 ```
 
 ### Mono-inertial mode with [EuRoC](https://projects.asl.ethz.ch/datasets/doku.php?id=kmavvisualinertialdatasets)'s [`MH_01_easy.bag`]( http://robotics.ethz.ch/~asl-datasets/ijrr_euroc_mav_dataset/machine_hall/MH_01_easy/MH_01_easy.bag):
@@ -101,12 +110,12 @@ rosservice call /orb_slam3/save_map [file_name]
 - `/camera/image_raw` for Mono(-Inertial) node
 - `/camera/left/image_raw` for Stereo(-Inertial) node
 - `/camera/right/image_raw` for Stereo(-Inertial) node
-- `/imu` for Mono/Stereo-Inertial node
+- `/imu` for Mono/Stereo/RGBD-Inertial node
 - `/camera/rgb/image_raw` and `/camera/depth_registered/image_raw` for RGBD node
 ### Published topics
 - `/orb_slam3/camera_pose`, left camera pose in world frame, published at camera rate
 - `/orb_slam3/body_odom`, imu-body odometry in world frame, published at camera rate
-- `/orb_slam3/tracking_image`, image from the left camera with key points and a status text
+- `/orb_slam3/tracking_image`, processed image from the left camera with key points and status text
 - `/orb_slam3/tracked_points`, all key points contained in the sliding window
 - `/orb_slam3/all_points`, all key points in the map
 - `/orb_slam3/kf_markers`, markers for all keyframes' positions
