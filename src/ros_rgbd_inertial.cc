@@ -152,12 +152,12 @@ void ImageGrabber::SyncWithImu()
             this->mBufMutex.unlock();
 
             vector<ORB_SLAM3::IMU::Point> vImuMeas;
+            vImuMeas.clear();
             Eigen::Vector3f Wbb;
             mpImuGb->mBufMutex.lock();
             if (!mpImuGb->imuBuf.empty())
             {
                 // Load imu measurements from buffer
-                vImuMeas.clear();
                 while(!mpImuGb->imuBuf.empty() && mpImuGb->imuBuf.front()->header.stamp.toSec() <= tIm)
                 {
                     double t = mpImuGb->imuBuf.front()->header.stamp.toSec();

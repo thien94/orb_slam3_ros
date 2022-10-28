@@ -82,6 +82,9 @@ void setup_publishers(ros::NodeHandle &node_handler, image_transport::ImageTrans
 void publish_topics(ros::Time msg_time, Eigen::Vector3f Wbb)
 {
     Sophus::SE3f Twc = pSLAM->GetCamTwc();
+
+    if (Twc.translation().array().isNaN()[0] || Twc.rotationMatrix().array().isNaN()(0,0)) // avoid publishing NaN
+        return;
     
     // Common topics
     publish_camera_pose(Twc, msg_time);

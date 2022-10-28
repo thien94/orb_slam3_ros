@@ -26,7 +26,7 @@ python3 -c "import cv2; print(cv2.__version__)"
 On a freshly installed Ubuntu 20.04.4 LTS with desktop image, OpenCV 4.2.0 is already included. If a newer version is required (>= 3.0), follow [installation instruction](https://docs.opencv.org/4.x/d0/d3d/tutorial_general_install.html) and change the corresponding OpenCV version in `CMakeLists.txt`
 
 ### (Optional) `hector-trajectory-server`
-Install `hector-trajectory-server` to visualize the trajectory path
+Install `hector-trajectory-server` to visualize the real-time trajectory of the camera/imu. Note that this real-time trajectory might not be the same as the keyframes' trajectory.
 ```
 sudo apt install ros-[DISTRO]-hector-trajectory-server
 ```
@@ -40,7 +40,7 @@ catkin build
 
 ## 3. Run Examples
 
-### Mono mode with [NTU VIRAL](https://ntu-aris.github.io/ntu_viral_dataset/)'s [`eee_01`](https://researchdata.ntu.edu.sg/api/access/datafile/68133):
+### Mono mode with [NTU VIRAL](https://ntu-aris.github.io/ntu_viral_dataset/)'s [`eee_01.bag`](https://researchdata.ntu.edu.sg/api/access/datafile/68133):
 
 ```
 # In one terminal:
@@ -80,6 +80,17 @@ roslaunch orb_slam3_ros tum_rgbd.launch
 rosbag play rgbd_dataset_freiburg1_xyz.bag
 ```
 - **Note**: change `TUMX.yaml` to `TUM1.yaml`,`TUM2.yaml` or `TUM3.yaml` for freiburg1, freiburg2 and freiburg3 sequences respectively.
+
+### RGB-D-Inertial mode with [VINS-RGBD](https://github.com/STAR-Center/VINS-RGBD)'s [`Normal.bag`](https://vision.in.tum.de/rgbd/dataset/freiburg1/rgbd_dataset_freiburg1_xyz.bag)
+- Download the bag files, for example [Normal.bag](https://star-center.shanghaitech.edu.cn/seafile/d/0ea45d1878914077ade5/).
+- Decompress the bag, run `rosbag decompress Normal.bag`.
+- Change the calibration params in `RealSense_D435i.yaml` if necessary.
+```
+# In one terminal:
+roslaunch orb_slam3_ros rs_d435i_rgbd_inertial.launch.launch
+# In another terminal:
+rosbag play Normal.bag
+```
 
 ### Live stereo-inertial mode with Realsense T265
 - Modify the original `rs_t265.launch` to enable fisheye images and imu data (change `unite_imu_method` to `linear_interpolation`).

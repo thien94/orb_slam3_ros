@@ -285,6 +285,10 @@ Eigen::Matrix3f Preintegrated::GetDeltaRotation(const Bias &b_)
     std::unique_lock<std::mutex> lock(mMutex);
     Eigen::Vector3f dbg;
     dbg << b_.bwx-b.bwx,b_.bwy-b.bwy,b_.bwz-b.bwz;
+    if (dbg.array().isNaN()[0])
+        dbg = Eigen::Vector3f(0,0,0);
+    if (JRg.array().isNaN()(0,0))
+        JRg.setZero();
     return NormalizeRotation(dR * Sophus::SO3f::exp(JRg * dbg).matrix());
 }
 
