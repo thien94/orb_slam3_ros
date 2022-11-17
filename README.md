@@ -140,8 +140,18 @@ rosservice call /orb_slam3/save_map [file_name]
 - `rosservice call /orb_slam3/save_map [file_name]`: save the map as `[file_name].osa` in `ROS_HOME` folder.
 - `rosservice call /orb_slam3/save_traj [file_name]`: save the estimated trajectory of camera and keyframes as `[file_name]_cam_traj.txt` and  `[file_name]_kf_traj.txt` in `ROS_HOME` folder.
 
+### Docker
+Provided [Dockerfile](Dockerfile) sets up an image based a ROS noetic environment including RealSense SDK
+
+To access a USB device (such as RealSense camera) inside docker container use:
+``` bash
+docker run --network host --privileged -v /dev:/dev -it [image_name]
+```
+
+> **_NOTE:_**  `--network host` is recommended to listen to rostopics outside the container
+
 ## To-do:
 - ~~Publish basic topics (camera pose, tracking image and point cloud)~~
 - ~~Publish more topics (odom, full map pointcloud, keyframe, etc.)~~
 - ~~Add other functions as services (map save/load, save estimated trajectory, etc.)~~
-- Add docker support
+- ~~Add docker support~~
