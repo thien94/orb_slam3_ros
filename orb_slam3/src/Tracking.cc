@@ -93,6 +93,42 @@ Tracking::Tracking(System *pSys, ORBVocabulary* pVoc, FrameDrawer *pFrameDrawer,
             }
         }
     }
+    
+    // Obtain the angles which will be used to rotate the world frame
+    Tc0w = Sophus::SE3f();
+    if (sensor==System::MONOCULAR)
+    {
+        float dWorldRPY[3] = {};
+
+        string strAngleNames[3] = {"roll", "pitch", "yaw"};
+
+        cv::FileStorage fSettings(strSettingPath, cv::FileStorage::READ);
+
+        std::cout << "Rotate world frame by (rad): ";
+        for (int i = 0; i < 3; i++)
+        {
+            cv::FileNode node = fSettings["WorldRPY." + strAngleNames[i]];
+            if(!node.empty() && node.isReal())
+            {
+                dWorldRPY[i] = node.real();
+            }
+            else
+            {
+                dWorldRPY[i] = 0;
+            }
+            std::cout << strAngleNames[i] << " " << dWorldRPY[i] << " "; 
+        }
+        std::cout << endl;
+        
+        Eigen::AngleAxisf AngleR(dWorldRPY[0], Eigen::Vector3f::UnitX());
+        Eigen::AngleAxisf AngleP(dWorldRPY[1], Eigen::Vector3f::UnitY());
+        Eigen::AngleAxisf AngleY(dWorldRPY[2], Eigen::Vector3f::UnitZ());
+        Eigen::Quaternionf qRPY = AngleR * AngleP * AngleY;
+        Eigen::Matrix3f RotRPY = qRPY.matrix();
+        Tc0w = Sophus::SE3f(RotRPY, Eigen::Vector3f::Zero());
+        // std::cout << "Tc0w pos is " << Tc0w.translation()<< endl;
+        // std::cout << "Tc0w rot is " << Tc0w.rotationMatrix() << endl;
+    }
 
     initID = 0; lastID = 0;
     mbInitWith3KFs = false;
@@ -2453,7 +2489,6 @@ void Tracking::MonocularInitialization()
         // Set Reference Frame
         if(mCurrentFrame.mvKeys.size()>100)
         {
-
             mInitialFrame = Frame(mCurrentFrame);
             mLastFrame = Frame(mCurrentFrame);
             mvbPrevMatched.resize(mCurrentFrame.mvKeysUn.size());
@@ -2513,8 +2548,9 @@ void Tracking::MonocularInitialization()
             }
 
             // Set Frame Poses
-            mInitialFrame.SetPose(Sophus::SE3f());
-            mCurrentFrame.SetPose(Tcw);
+            // mInitialFrame.SetPose(Sophus::SE3f());
+            mInitialFrame.SetPose(Tc0w);
+            mCurrentFrame.SetPose(Tcw * Tc0w);
 
             CreateInitialMapMonocular();
         }
@@ -2548,6 +2584,9 @@ void Tracking::CreateInitialMapMonocular()
         //Create MapPoint.
         Eigen::Vector3f worldPos;
         worldPos << mvIniP3D[i].x, mvIniP3D[i].y, mvIniP3D[i].z;
+        Sophus::SE3f Tc0mp(Eigen::Matrix3f::Identity(), worldPos);
+        Sophus::SE3f Twmp = Tc0w.inverse() * Tc0mp;
+        worldPos = Twmp.translation();
         MapPoint* pMP = new MapPoint(worldPos,pKFcur,mpAtlas->GetCurrentMap());
 
         pKFini->AddMapPoint(pMP,i);

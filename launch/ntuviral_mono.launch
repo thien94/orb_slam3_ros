@@ -13,7 +13,7 @@
         <!-- Parameters for ROS -->
         <param name="world_frame_id"    type="string"   value="world" />
         <param name="cam_frame_id"      type="string"   value="camera" />
-        <param name="enable_pangolin"   type="bool"     value="true" />
+        <param name="enable_pangolin"   type="bool"     value="false" />
     </node>
     
     <!-- Visualization -->
