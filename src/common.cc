@@ -201,19 +201,17 @@ void publish_keypoints(std::vector<ORB_SLAM3::MapPoint*> tracked_map_points, std
 
 
     // Create a blank image. Adjust dimensions as per your requirement.
-    int width = 640;  // Assuming a standard 640x480 size. Change as needed.
-    int height = 480;
-    cv::Mat blankImg = cv::Mat::zeros(height, width, CV_8UC3);  // Black image
+    //int width = 640;  // Assuming a standard 640x480 size. Change as needed.
+    //int height = 480;
+    //cv::Mat blankImg = cv::Mat::zeros(height, width, CV_8UC3);  // Black image
 
     // Draw keypoints on the blank image.
-    cv::drawKeypoints(blankImg, finalKeypoints, blankImg, cv::Scalar(0, 255, 0), cv::DrawMatchesFlags::DEFAULT);
+    //cv::drawKeypoints(blankImg, finalKeypoints, blankImg, cv::Scalar(0, 255, 0), cv::DrawMatchesFlags::DEFAULT);
 
     // Display the image (optional)
-    cv::imshow("Keypoints", blankImg);
-    cv::waitKey(1);  // Display the image for a short duration. Adjust if needed.
+    //cv::imshow("Keypoints", blankImg);
+    //cv::waitKey(1);  
 
-    // TODO: If you want, convert the blankImg to ROS message and publish.
-    // Use cv_bridge for the conversion.
     sensor_msgs::PointCloud2 cloud = keypoints_to_pointcloud(finalKeypoints, msg_time);
 
     tracked_keypoints_pub.publish(cloud);
