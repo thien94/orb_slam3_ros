@@ -302,7 +302,6 @@ Sophus::SE3f System::TrackStereo(const cv::Mat &imLeft, const cv::Mat &imRight, 
     mTrackedMapPoints = mpTracker->mCurrentFrame.mvpMapPoints;
     mTrackedKeyPointsUn = mpTracker->mCurrentFrame.mvKeysUn;
     mTrackedKeyPoints = mpTracker->mCurrentFrame.mvKeys;
-    //mTrackedKeyPoints = mpTracker->mvIniMatches;
 
     return Tcw;
 }
@@ -376,7 +375,6 @@ Sophus::SE3f System::TrackRGBD(const cv::Mat &im, const cv::Mat &depthmap, const
     mTrackedMapPoints = mpTracker->mCurrentFrame.mvpMapPoints;
     mTrackedKeyPointsUn = mpTracker->mCurrentFrame.mvKeysUn;
     mTrackedKeyPoints = mpTracker->mCurrentFrame.mvKeys;
-    //mTrackedKeyPoints = mpTracker->mvIniMatches;
 
     return Tcw;
 }
@@ -455,7 +453,6 @@ Sophus::SE3f System::TrackMonocular(const cv::Mat &im, const double &timestamp, 
     mTrackedMapPoints = mpTracker->mCurrentFrame.mvpMapPoints;
     mTrackedKeyPointsUn = mpTracker->mCurrentFrame.mvKeysUn;
     mTrackedKeyPoints = mpTracker->mCurrentFrame.mvKeys;
-    //mTrackedKeyPoints = mpTracker->mvIniMatches;
 
     return Tcw;
 }
