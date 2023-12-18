@@ -301,6 +301,7 @@ Sophus::SE3f System::TrackStereo(const cv::Mat &imLeft, const cv::Mat &imRight, 
     mTrackingState = mpTracker->mState;
     mTrackedMapPoints = mpTracker->mCurrentFrame.mvpMapPoints;
     mTrackedKeyPointsUn = mpTracker->mCurrentFrame.mvKeysUn;
+    mTrackedKeyPoints = mpTracker->mCurrentFrame.mvKeys;
 
     return Tcw;
 }
@@ -373,6 +374,8 @@ Sophus::SE3f System::TrackRGBD(const cv::Mat &im, const cv::Mat &depthmap, const
     mTrackingState = mpTracker->mState;
     mTrackedMapPoints = mpTracker->mCurrentFrame.mvpMapPoints;
     mTrackedKeyPointsUn = mpTracker->mCurrentFrame.mvKeysUn;
+    mTrackedKeyPoints = mpTracker->mCurrentFrame.mvKeys;
+
     return Tcw;
 }
 
@@ -449,6 +452,7 @@ Sophus::SE3f System::TrackMonocular(const cv::Mat &im, const double &timestamp, 
     mTrackingState = mpTracker->mState;
     mTrackedMapPoints = mpTracker->mCurrentFrame.mvpMapPoints;
     mTrackedKeyPointsUn = mpTracker->mCurrentFrame.mvKeysUn;
+    mTrackedKeyPoints = mpTracker->mCurrentFrame.mvKeys;
 
     return Tcw;
 }
@@ -1314,6 +1318,12 @@ vector<cv::KeyPoint> System::GetTrackedKeyPointsUn()
 {
     unique_lock<mutex> lock(mMutexState);
     return mTrackedKeyPointsUn;
+}
+
+vector<cv::KeyPoint> System::GetTrackedKeyPoints()
+{
+    unique_lock<mutex> lock(mMutexState);
+    return mTrackedKeyPoints;
 }
 
 cv::Mat System::GetCurrentFrame () {

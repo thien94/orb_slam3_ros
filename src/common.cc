@@ -14,6 +14,7 @@ ORB_SLAM3::System::eSensor sensor_type = ORB_SLAM3::System::NOT_SET;
 std::string world_frame_id, cam_frame_id, imu_frame_id;
 ros::Publisher pose_pub, odom_pub, kf_markers_pub;
 ros::Publisher tracked_mappoints_pub, all_mappoints_pub;
+ros::Publisher tracked_keypoints_pub;
 image_transport::Publisher tracking_img_pub;
 
 //////////////////////////////////////////////////
@@ -67,6 +68,8 @@ void setup_publishers(ros::NodeHandle &node_handler, image_transport::ImageTrans
 
     tracked_mappoints_pub = node_handler.advertise<sensor_msgs::PointCloud2>(node_name + "/tracked_points", 1);
 
+    tracked_keypoints_pub = node_handler.advertise<sensor_msgs::PointCloud2>(node_name + "/tracked_key_points", 1);
+
     all_mappoints_pub = node_handler.advertise<sensor_msgs::PointCloud2>(node_name + "/all_points", 1);
 
     tracking_img_pub = image_transport.advertise(node_name + "/tracking_image", 1);
@@ -91,6 +94,9 @@ void publish_topics(ros::Time msg_time, Eigen::Vector3f Wbb)
     publish_tf_transform(Twc, world_frame_id, cam_frame_id, msg_time);
 
     publish_tracking_img(pSLAM->GetCurrentFrame(), msg_time);
+
+    publish_keypoints(pSLAM->GetTrackedMapPoints(), pSLAM->GetTrackedKeyPoints(), msg_time);
+
     publish_tracked_points(pSLAM->GetTrackedMapPoints(), msg_time);
     publish_all_points(pSLAM->GetAllMapPoints(), msg_time);
     publish_kf_markers(pSLAM->GetAllKeyframePoses(), msg_time);
@@ -178,6 +184,40 @@ void publish_tracking_img(cv::Mat image, ros::Time msg_time)
     tracking_img_pub.publish(rendered_image_msg);
 }
 
+void publish_keypoints(std::vector<ORB_SLAM3::MapPoint*> tracked_map_points, std::vector<cv::KeyPoint> tracked_keypoints, ros::Time msg_time)
+{   
+    std::vector<cv::KeyPoint> finalKeypoints;
+
+    int numKFs = tracked_keypoints.size();
+
+    if (tracked_keypoints.empty())
+        return;
+
+    for (size_t i = 0; i < tracked_map_points.size(); i++) {
+        if (tracked_map_points[i]) {  // if the MapPoint pointer is not nullptr
+            finalKeypoints.push_back(tracked_keypoints[i]);
+        }
+    }
+
+
+    // Create a blank image. Adjust dimensions as per your requirement.
+    //int width = 640;  // Assuming a standard 640x480 size. Change as needed.
+    //int height = 480;
+    //cv::Mat blankImg = cv::Mat::zeros(height, width, CV_8UC3);  // Black image
+
+    // Draw keypoints on the blank image.
+    //cv::drawKeypoints(blankImg, finalKeypoints, blankImg, cv::Scalar(0, 255, 0), cv::DrawMatchesFlags::DEFAULT);
+
+    // Display the image (optional)
+    //cv::imshow("Keypoints", blankImg);
+    //cv::waitKey(1);  
+
+    sensor_msgs::PointCloud2 cloud = keypoints_to_pointcloud(finalKeypoints, msg_time);
+
+    tracked_keypoints_pub.publish(cloud);
+}
+
+
 void publish_tracked_points(std::vector<ORB_SLAM3::MapPoint*> tracked_points, ros::Time msg_time)
 {
     sensor_msgs::PointCloud2 cloud = mappoint_to_pointcloud(tracked_points, msg_time);
@@ -229,6 +269,48 @@ void publish_kf_markers(std::vector<Sophus::SE3f> vKFposes, ros::Time msg_time)
 //////////////////////////////////////////////////
 // Miscellaneous functions
 //////////////////////////////////////////////////
+
+sensor_msgs::PointCloud2 keypoints_to_pointcloud(std::vector<cv::KeyPoint>& keypoints, ros::Time msg_time) {
+    const int num_channels = 3; // x y z
+
+    sensor_msgs::PointCloud2 cloud;
+
+    cloud.header.stamp = msg_time;
+    cloud.header.frame_id = world_frame_id; 
+    cloud.height = 1;
+    cloud.width = keypoints.size();
+    cloud.is_bigendian = false;
+    cloud.is_dense = true;
+    cloud.point_step = num_channels * sizeof(float);
+    cloud.row_step = cloud.point_step * cloud.width;
+    cloud.fields.resize(num_channels);
+
+
+    std::string channel_id[] = { "x", "y", "z" };
+
+    for (int i = 0; i < num_channels; i++) {
+        cloud.fields[i].name = channel_id[i];
+        cloud.fields[i].offset = i * sizeof(float);
+        cloud.fields[i].count = 1;
+        cloud.fields[i].datatype = sensor_msgs::PointField::FLOAT32;
+    }
+
+    cloud.data.resize(cloud.row_step * cloud.height);
+
+    unsigned char *cloud_data_ptr = &(cloud.data[0]);
+
+    for (unsigned int i = 0; i < cloud.width; i++) {
+        float data_array[num_channels] = {
+            keypoints[i].pt.x,
+            keypoints[i].pt.y,
+            0.0f // Z value is 0 for 2D keypoints
+        };
+
+        memcpy(cloud_data_ptr + (i * cloud.point_step), data_array, num_channels * sizeof(float));
+    }
+    return cloud;
+
+}
 
 sensor_msgs::PointCloud2 mappoint_to_pointcloud(std::vector<ORB_SLAM3::MapPoint*> map_points, ros::Time msg_time)
 {
